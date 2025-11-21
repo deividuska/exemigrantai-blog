@@ -1,0 +1,51 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { getPages } from '../lib/wordpress';
+import '../styles/global.css';
+
+export async function getStaticPaths() {
+  const pages = await getPages();
+  
+  return pages.map((page) => ({
+    params: { slug: page.slug },
+    props: { page },
+  }));
+}
+
+const { page } = Astro.props;
+---
+
+<!doctype html>
+<html lang="lt">
+	<head>
+		<BaseHead title={page.title.rendered} description={page.excerpt.rendered.replace(/<[^>]*>/g, '')} />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@wordpress/block-library@latest/build-style/style.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@wordpress/block-library@latest/build-style/theme.min.css">
+	</head>
+	<body class="bg-stone-50" style="font-family: 'Inter', sans-serif;">
+		<Header />
+		<main class="container mx-auto px-4 py-12 max-w-5xl">
+			<article class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+				{page._embedded?.['wp:featuredmedia']?.[0] && (
+					<img 
+						src={page._embedded['wp:featuredmedia'][0].source_url} 
+						alt={page.title.rendered}
+						class="w-full h-96 object-cover"
+					/>
+				)}
+				
+				<div class="p-8 md:p-12">
+					<h1 class="text-4xl md:text-5xl font-bold mb-8 text-gray-900 leading-tight" set:html={page.title.rendered} />
+					
+					<div class="prose prose-lg mx-auto" set:html={page.content.rendered} />
+				</div>
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>

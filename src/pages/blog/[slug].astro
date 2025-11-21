@@ -1,0 +1,89 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { getPosts, getPost } from '../../lib/wordpress';
+import '../../styles/global.css';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { slug } = Astro.params;
+const post = await getPost(slug);
+const categories = post._embedded?.['wp:term']?.[0] || [];
+
+// Calculate reading time
+const wordCount = post.content.rendered.replace(/<[^>]*>/g, '').split(/\s+/).length;
+const readingTime = Math.ceil(wordCount / 200);
+---
+
+<!doctype html>
+<html lang="lt">
+	<head>
+		<BaseHead title={post.title.rendered} description={post.excerpt.rendered.replace(/<[^>]*>/g, '')} />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@wordpress/block-library@latest/build-style/style.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@wordpress/block-library@latest/build-style/theme.min.css">
+	</head>
+	<body class="bg-stone-50" style="font-family: 'Inter', sans-serif;">
+		<Header />
+		<main class="container mx-auto px-4 py-12 max-w-5xl">
+			<article class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+				{post._embedded?.['wp:featuredmedia']?.[0] && (
+					<img 
+						src={post._embedded['wp:featuredmedia'][0].source_url} 
+						alt={post.title.rendered}
+						class="w-full h-96 object-cover"
+					/>
+				)}
+				
+				<div class="p-8 md:p-12">
+					{categories.length > 0 && (
+						<div class="flex gap-2 mb-6 flex-wrap">
+							{categories.map(cat => (
+								<span class="text-xs font-medium bg-blue-50 text-blue-700 px-3 py-1.5 rounded uppercase tracking-wide">
+									{cat.name}
+								</span>
+							))}
+						</div>
+					)}
+					
+					<h1 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900 leading-tight" set:html={post.title.rendered} />
+					
+					<div class="flex items-center gap-4 text-sm text-gray-500 mb-8 pb-8 border-b border-gray-200">
+						<time class="font-medium">
+							{new Date(post.date).toLocaleDateString('lt-LT', { 
+								year: 'numeric', 
+								month: 'long', 
+								day: 'numeric' 
+							})}
+						</time>
+						<span>•</span>
+						<span>{readingTime} min skaitymo</span>
+					</div>
+					
+					<div class="prose prose-lg mx-auto" set:html={post.content.rendered} />
+				</div>
+			</article>
+			
+			<a 
+				href="/" 
+				class="inline-flex items-center mt-8 text-blue-600 hover:text-blue-700 font-semibold transition-colors group"
+			>
+				<svg class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+				</svg>
+				Atgal į pradžią
+			</a>
+		</main>
+		<Footer />
+	</body>
+</html>
