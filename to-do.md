@@ -253,11 +253,47 @@ emigrantai-blog/
 3. **Upload dist/** to RunCloud server
 4. **Done** - new post is live at emigrantai.lt
 
+## Completed Setup
+
+### ✅ GitHub Repository
+- Repository: `deividuska/exemigrantai-blog`
+- Branch: `main`
+- All source code pushed (dist/ excluded via .gitignore)
+
+### ✅ RunCloud Deployment
+- Server path: `/home/runcloud/webapps/app-quitzon`
+- Manual deployment via SFTP (FileZilla)
+- Files uploaded from `dist/` folder
+
+### ✅ Security & Performance
+- Error handling added to all WordPress API functions (getPosts, getPost, getPages, getMenu)
+- URL parsing improved in Header component (using URL constructor)
+- Google Fonts optimized (non-blocking with media="print" onload="this.media='all'")
+- Demo blog posts removed (first-post, second-post, third-post, markdown-style-guide, using-mdx)
+
+### ✅ WordPress Backend Protection
+- Cloudflare WAF custom rule configured
+- Blocks wp.exemigrantai.lt frontend access
+- Allows: wp-admin, wp-login, wp-json (REST API), wp-content, wp-includes
+- SEO plugins work normally in admin
+
+### ✅ Sitemap
+- Generated at: `https://exemigrantai.lt/sitemap-index.xml`
+- Contains only real WordPress posts (no demo posts)
+- Ready for Google Search Console submission
+
 ## Automation Options (Future)
 
-- Set up GitHub repository
-- Use GitHub Actions to auto-build and deploy
-- Trigger rebuilds via WordPress webhook on post publish
+- Set up RunCloud Git deployment with automated build script
+- Trigger rebuilds via WordPress webhook on post publish (WP Webhooks plugin)
+- Alternative: GitHub Actions for automated deployments
+
+## Current Workflow
+
+1. **Write post** in WordPress admin (wp.exemigrantai.lt/wp-admin)
+2. **Build locally:** `npm run build` 
+3. **Upload via SFTP:** Upload `dist/` contents to `/home/runcloud/webapps/app-quitzon`
+4. **Done** - new post is live at exemigrantai.lt
 
 ## Troubleshooting
 
