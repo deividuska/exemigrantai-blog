@@ -9,7 +9,7 @@
 /* WordPress content formatting */
 .prose {
 	color: #374151;
-	max-width: 85ch;
+	max-width: 80ch;
 }
 
 .prose p {
