@@ -260,16 +260,30 @@ emigrantai-blog/
 - Branch: `main`
 - All source code pushed (dist/ excluded via .gitignore)
 
-### ✅ RunCloud Deployment
-- Server path: `/home/runcloud/webapps/app-quitzon`
-- Manual deployment via SFTP (FileZilla)
-- Files uploaded from `dist/` folder
+### ✅ Cloudflare Pages Deployment
+- **Hosting:** Cloudflare Pages (replaced RunCloud manual uploads)
+- **Live URL:** exemigrantai.lt (Active with SSL)
+- **Build settings:**
+  - Build command: `npm run build`
+  - Build output: `dist`
+  - Environment variable: `WP_API_URL=https://wp.exemigrantai.lt/wp-json/wp/v2`
+- **Deploy hook created** for automatic rebuilds from WordPress
+- **Automatic deployments:** Every git push triggers rebuild
+
+### ✅ WordPress Backend (RunCloud)
+- Server path: `/home/runcloud/webapps/app-quitzon` (WordPress only, no frontend)
+- WordPress admin: `wp.exemigrantai.lt/wp-admin`
+- REST API: `wp.exemigrantai.lt/wp-json/wp/v2`
+- Custom code in `functions.php` for Cloudflare webhook triggers
 
 ### ✅ Security & Performance
 - Error handling added to all WordPress API functions (getPosts, getPost, getPages, getMenu)
 - URL parsing improved in Header component (using URL constructor)
 - Google Fonts optimized (non-blocking with media="print" onload="this.media='all'")
 - Demo blog posts removed (first-post, second-post, third-post, markdown-style-guide, using-mdx)
+- Image optimization: WordPress medium_large (768px) and large (1024px) sizes
+- Lazy loading on images with width/height attributes
+- **LCP optimization:** First image uses `loading="eager"` and `fetchpriority="high"`
 
 ### ✅ WordPress Backend Protection
 - Cloudflare WAF custom rule configured
@@ -277,23 +291,41 @@ emigrantai-blog/
 - Allows: wp-admin, wp-login, wp-json (REST API), wp-content, wp-includes
 - SEO plugins work normally in admin
 
+### ✅ Cloudflare Cache Rules
+- WordPress images cached for 1 year (Browser TTL)
+- Rule: `wp.exemigrantai.lt/wp-content/uploads/*`
+- Improves PageSpeed score and repeat visit performance
+
+### ✅ Automatic Rebuilds
+- WordPress `functions.php` webhook integration
+- Triggers on: post publish, post update, page publish, page update
+- Uses `transition_post_status` hook to avoid duplicate triggers
+- Prevents autosave/revision triggers
+- Security: Checks user capabilities and post status
+
 ### ✅ Sitemap
 - Generated at: `https://exemigrantai.lt/sitemap-index.xml`
 - Contains only real WordPress posts (no demo posts)
 - Ready for Google Search Console submission
 
-## Automation Options (Future)
-
-- Set up RunCloud Git deployment with automated build script
-- Trigger rebuilds via WordPress webhook on post publish (WP Webhooks plugin)
-- Alternative: GitHub Actions for automated deployments
-
 ## Current Workflow
 
-1. **Write post** in WordPress admin (wp.exemigrantai.lt/wp-admin)
-2. **Build locally:** `npm run build` 
-3. **Upload via SFTP:** Upload `dist/` contents to `/home/runcloud/webapps/app-quitzon`
-4. **Done** - new post is live at exemigrantai.lt
+### For Content Changes (WordPress posts/pages):
+1. **Publish/update post** in WordPress admin (wp.exemigrantai.lt/wp-admin)
+2. **Automatic rebuild** triggered via webhook to Cloudflare Pages
+3. **Wait ~1-2 minutes** for Cloudflare to rebuild and deploy
+4. **Done** - changes live at exemigrantai.lt
+
+### For Code Changes (Astro templates, CSS, etc):
+1. **Edit files** in VS Code
+2. **Commit changes:** `git add .` → `git commit -m "message"` → `git push`
+3. **Automatic rebuild** triggered by GitHub push
+4. **Wait ~1-2 minutes** for Cloudflare to build and deploy
+5. **Done** - changes live at exemigrantai.lt
+
+### Manual Rebuild (if needed):
+- Go to Cloudflare Pages dashboard → Deployments
+- Click "Retry deployment" to force rebuild
 
 ## Troubleshooting
 

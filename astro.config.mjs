@@ -12,6 +12,10 @@ export default defineConfig({
   output: 'static',
   integrations: [mdx(), sitemap()],
 
+  build: {
+    inlineStylesheets: 'auto',
+  },
+
   vite: {
     plugins: [tailwindcss()],
   },
