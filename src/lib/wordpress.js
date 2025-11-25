@@ -1,5 +1,12 @@
 const WP_API_URL = import.meta.env.WP_API_URL || 'https://wp.emigrantai.lt/wp-json/wp/v2';
 const WP_BASE_URL = WP_API_URL.replace('/wp-json/wp/v2', '');
+const EASY_IO_CDN = 'enbxd79stev.exactdn.com';
+
+// Convert WordPress image URLs to Easy IO CDN for WebP/AVIF and optimization
+export function toEasyIOUrl(url) {
+  if (!url) return url;
+  return url.replace('wp.exemigrantai.lt', EASY_IO_CDN);
+}
 
 export async function getPosts() {
   try {

@@ -4,7 +4,7 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import ScrollToTop from '../components/ScrollToTop.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { getPosts, getACFOptions } from '../lib/wordpress';
+import { getPosts, getACFOptions, toEasyIOUrl } from '../lib/wordpress';
 import '../styles/global.css';
 
 const posts = await getPosts();
@@ -28,7 +28,8 @@ const homepageTitle = acfOptions.homepage_title || 'Naujausi įrašai';
 			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 				{posts.map((post, index) => {
 					// Use medium_large size (max 768px) for better performance
-					const featuredImage = post._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.medium_large?.source_url || post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+					const featuredImageRaw = post._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.medium_large?.source_url || post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+					const featuredImage = toEasyIOUrl(featuredImageRaw);
 					const categories = post._embedded?.['wp:term']?.[0]?.map(cat => cat.name) || [];
 					// First image is LCP - prioritize it
 					const isFirstImage = index === 0;
