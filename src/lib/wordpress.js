@@ -71,13 +71,12 @@ export async function getMenu(menuId) {
 
 export async function getACFOptions() {
   try {
-    const response = await fetch(`${WP_BASE_URL}/wp-json/acf/v3/options/options`);
+    const response = await fetch(`${WP_BASE_URL}/wp-json/custom/v1/options`);
     if (!response.ok) {
       console.error('Failed to fetch ACF options:', response.status);
       return {};
     }
-    const data = await response.json();
-    return data.acf || {};
+    return response.json();
   } catch (error) {
     console.error('Error fetching ACF options:', error);
     return {};
