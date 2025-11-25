@@ -4,10 +4,12 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import ScrollToTop from '../components/ScrollToTop.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { getPosts } from '../lib/wordpress';
+import { getPosts, getACFOptions } from '../lib/wordpress';
 import '../styles/global.css';
 
 const posts = await getPosts();
+const acfOptions = await getACFOptions();
+const homepageTitle = acfOptions.homepage_title || 'Naujausi įrašai';
 ---
 
 <!doctype html>
@@ -21,7 +23,7 @@ const posts = await getPosts();
 	<body class="bg-stone-50" style="font-family: 'Inter', sans-serif;">
 		<Header />
 		<main class="container mx-auto px-4 py-16 max-w-6xl">
-			<h1 class="text-3xl font-bold text-center mb-12 text-gray-900">Naujausi įrašai</h1>
+			<h1 class="text-3xl font-bold text-center mb-12 text-gray-900">{homepageTitle}</h1>
 			
 			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 				{posts.map((post, index) => {

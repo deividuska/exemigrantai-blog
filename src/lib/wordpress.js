@@ -68,3 +68,18 @@ export async function getMenu(menuId) {
     return [];
   }
 }
+
+export async function getACFOptions() {
+  try {
+    const response = await fetch(`${WP_BASE_URL}/wp-json/acf/v3/options/options`);
+    if (!response.ok) {
+      console.error('Failed to fetch ACF options:', response.status);
+      return {};
+    }
+    const data = await response.json();
+    return data.acf || {};
+  } catch (error) {
+    console.error('Error fetching ACF options:', error);
+    return {};
+  }
+}
