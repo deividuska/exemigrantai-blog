@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://exemigrantai.lt/sitemap-index.xml
