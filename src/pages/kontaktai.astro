@@ -1,0 +1,227 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ScrollToTop from '../components/ScrollToTop.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+---
+
+<!doctype html>
+<html lang="lt">
+	<head>
+		<BaseHead title={`Kontaktai - ${SITE_TITLE}`} description="Susisiekite su mumis" />
+		<style>
+			main {
+				width: 100%;
+				max-width: 720px;
+				margin: 0 auto;
+				padding: 2rem 1rem;
+			}
+			
+			h1 {
+				font-size: 2.5rem;
+				margin-bottom: 0.5rem;
+				color: #1f2937;
+			}
+			
+			.intro {
+				color: #6b7280;
+				margin-bottom: 2rem;
+				font-size: 1.1rem;
+			}
+			
+			.contact-form {
+				background: #f9fafb;
+				padding: 2rem;
+				border-radius: 12px;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+			}
+			
+			.form-group {
+				margin-bottom: 1.5rem;
+			}
+			
+			label {
+				display: block;
+				margin-bottom: 0.5rem;
+				font-weight: 600;
+				color: #374151;
+			}
+			
+			input[type="text"],
+			input[type="email"],
+			textarea {
+				width: 100%;
+				padding: 0.75rem 1rem;
+				border: 1px solid #d1d5db;
+				border-radius: 8px;
+				font-size: 1rem;
+				font-family: inherit;
+				transition: border-color 0.2s, box-shadow 0.2s;
+				box-sizing: border-box;
+			}
+			
+			input[type="text"]:focus,
+			input[type="email"]:focus,
+			textarea:focus {
+				outline: none;
+				border-color: #2563eb;
+				box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+			}
+			
+			textarea {
+				min-height: 150px;
+				resize: vertical;
+			}
+			
+			button[type="submit"] {
+				background: #2563eb;
+				color: white;
+				padding: 0.875rem 2rem;
+				border: none;
+				border-radius: 8px;
+				font-size: 1rem;
+				font-weight: 600;
+				cursor: pointer;
+				transition: background-color 0.2s;
+				width: 100%;
+			}
+			
+			button[type="submit"]:hover {
+				background: #1d4ed8;
+			}
+			
+			button[type="submit"]:active {
+				background: #1e40af;
+			}
+			
+			.contact-info {
+				margin-top: 2rem;
+				padding: 1.5rem;
+				background: white;
+				border-radius: 12px;
+				border: 1px solid #e5e7eb;
+			}
+			
+			.contact-info h2 {
+				font-size: 1.25rem;
+				margin-bottom: 1rem;
+				color: #1f2937;
+			}
+			
+			.contact-info a {
+				color: #2563eb;
+				text-decoration: none;
+			}
+			
+			.contact-info a:hover {
+				text-decoration: underline;
+			}
+			
+			.success-message {
+				background: #d1fae5;
+				color: #065f46;
+				padding: 1rem;
+				border-radius: 8px;
+				margin-bottom: 1.5rem;
+				display: none;
+			}
+			
+			.error-message {
+				background: #fee2e2;
+				color: #991b1b;
+				padding: 1rem;
+				border-radius: 8px;
+				margin-bottom: 1.5rem;
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>Kontaktai</h1>
+			<p class="intro">Turite klausimų? Parašykite mums ir mes atsakysime kuo greičiau.</p>
+			
+			<div class="contact-form">
+				<div class="success-message" id="success">
+					✅ Jūsų žinutė sėkmingai išsiųsta! Atsakysime kuo greičiau.
+				</div>
+				<div class="error-message" id="error">
+					❌ Įvyko klaida. Bandykite dar kartą arba parašykite tiesiogiai el. paštu.
+				</div>
+				
+				<form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
+					<input type="hidden" name="access_key" value="5c4a4e28-f008-47f4-92d6-0808c2d4120f" />
+					<input type="hidden" name="subject" value="Nauja žinutė iš exemigrantai.lt" />
+					<input type="hidden" name="from_name" value="Exemigrantai.lt kontaktų forma" />
+					<input type="checkbox" name="botcheck" style="display: none;" />
+					
+					<div class="form-group">
+						<label for="name">Vardas</label>
+						<input type="text" id="name" name="name" required placeholder="Jūsų vardas" />
+					</div>
+					
+					<div class="form-group">
+						<label for="email">El. paštas</label>
+						<input type="email" id="email" name="email" required placeholder="jusu@email.lt" />
+					</div>
+					
+					<div class="form-group">
+						<label for="message">Žinutė</label>
+						<textarea id="message" name="message" required placeholder="Jūsų žinutė..."></textarea>
+					</div>
+					
+					<button type="submit">Siųsti žinutę</button>
+				</form>
+			</div>
+			
+			<div class="contact-info">
+				<h2>Kiti būdai susisiekti</h2>
+				<p>📧 El. paštas: <a href="mailto:deividas.krupstas@gmail.com">deividas.krupstas@gmail.com</a></p>
+				<p>👥 Facebook grupė: <a href="https://www.facebook.com/groups/372993659852080" target="_blank">Exemigrantai</a></p>
+			</div>
+		</main>
+		<Footer />
+		<ScrollToTop />
+		
+		<script>
+			const form = document.getElementById('contact-form') as HTMLFormElement;
+			const successMsg = document.getElementById('success') as HTMLElement;
+			const errorMsg = document.getElementById('error') as HTMLElement;
+			
+			form?.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				
+				const formData = new FormData(form);
+				const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+				const originalText = submitBtn.textContent;
+				submitBtn.textContent = 'Siunčiama...';
+				submitBtn.disabled = true;
+				
+				try {
+					const response = await fetch(form.action, {
+						method: 'POST',
+						body: formData
+					});
+					
+					const result = await response.json();
+					
+					if (result.success) {
+						successMsg.style.display = 'block';
+						errorMsg.style.display = 'none';
+						form.reset();
+					} else {
+						throw new Error('Form submission failed');
+					}
+				} catch (error) {
+					errorMsg.style.display = 'block';
+					successMsg.style.display = 'none';
+				} finally {
+					submitBtn.textContent = originalText;
+					submitBtn.disabled = false;
+				}
+			});
+		</script>
+	</body>
+</html>
