@@ -12,6 +12,12 @@ const menuItems = await getMenu();
 		<div class="menu-backdrop"></div>
 
 		<div class="nav-wrapper">
+			<a href="/" class="home-icon" title="Pradžia">
+				<svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24">
+					<path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+				</svg>
+				<span class="sr-only">Pradžia</span>
+			</a>
 			<div class="internal-links">
 				{menuItems.length > 0 ? (
 					menuItems.map((item) => {
@@ -112,6 +118,20 @@ const menuItems = await getMenu();
 		gap: 1em;
 		flex: 1;
 		justify-content: center;
+	}
+	
+	.home-icon {
+		display: flex;
+		align-items: center;
+		padding: 0.5em;
+		color: #1f2937;
+		border-bottom: none !important;
+		transition: color 0.2s;
+	}
+	
+	.home-icon:hover {
+		color: #2563eb;
+		border-bottom: none !important;
 	}
 	
 	.internal-links {
