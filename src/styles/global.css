@@ -6,6 +6,11 @@
 
 @import "tailwindcss";
 
+/* Override Tailwind's default Inter font to use system fonts */
+@theme {
+	--font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
 /* WordPress content formatting */
 .prose {
 	color: #374151;
