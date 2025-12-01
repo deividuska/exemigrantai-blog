@@ -3,11 +3,11 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import ScrollToTop from '../../components/ScrollToTop.astro';
-import { getPosts, getPost, toEasyIOUrl } from '../../lib/wordpress';
+import { getAllPosts, getPost, toEasyIOUrl } from '../../lib/wordpress';
 import '../../styles/global.css';
 
 export async function getStaticPaths() {
-  const posts = await getPosts();
+  const posts = await getAllPosts();
   
   return posts.map((post) => ({
     params: { slug: post.slug },

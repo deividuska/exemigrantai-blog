@@ -1,22 +1,47 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import ScrollToTop from '../components/ScrollToTop.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { getPosts, getACFOptions, toEasyIOUrl, POSTS_PER_PAGE } from '../lib/wordpress';
-import '../styles/global.css';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import ScrollToTop from '../../components/ScrollToTop.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { getPosts, getACFOptions, toEasyIOUrl, getTotalPosts, POSTS_PER_PAGE } from '../../lib/wordpress';
+import '../../styles/global.css';
 
-const { posts, totalPages, totalPosts } = await getPosts(1, POSTS_PER_PAGE);
+export async function getStaticPaths() {
+	const totalPosts = await getTotalPosts();
+	const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
+	
+	// Generate paths for pages 2 and above (page 1 is index.astro)
+	const paths = [];
+	for (let page = 2; page <= totalPages; page++) {
+		paths.push({ params: { page: String(page) } });
+	}
+	
+	return paths;
+}
+
+const { page } = Astro.params;
+const currentPage = parseInt(page);
+
+// Redirect page 1 to home
+if (currentPage === 1) {
+	return Astro.redirect('/');
+}
+
+const { posts, totalPages, totalPosts } = await getPosts(currentPage, POSTS_PER_PAGE);
 const acfOptions = await getACFOptions();
 const homepageTitle = acfOptions.homepage_title || 'Naujausi įrašai';
-const currentPage = 1;
+
+// If no posts found for this page, redirect to home
+if (posts.length === 0) {
+	return Astro.redirect('/');
+}
 ---
 
 <!doctype html>
 <html lang="lt">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={`${SITE_TITLE} - Puslapis ${currentPage}`} description={SITE_DESCRIPTION} />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -96,10 +121,15 @@ const currentPage = 1;
 			{/* Pagination */}
 			{totalPages > 1 && (
 				<nav class="flex justify-center items-center gap-2 mt-12" aria-label="Puslapių navigacija">
-					{/* Previous button - disabled on first page */}
-					<span class="px-4 py-2 text-gray-400 cursor-not-allowed">
-						← Ankstesnis
-					</span>
+					{/* Previous button */}
+					{currentPage > 1 && (
+						<a 
+							href={currentPage === 2 ? '/' : `/page/${currentPage - 1}`} 
+							class="px-4 py-2 text-blue-600 hover:text-blue-700 font-medium transition-colors"
+						>
+							← Ankstesnis
+						</a>
+					)}
 
 					{/* Page numbers */}
 					{Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -117,8 +147,11 @@ const currentPage = 1;
 					))}
 
 					{/* Next button */}
-					{totalPages > 1 && (
-						<a href="/page/2" class="px-4 py-2 text-blue-600 hover:text-blue-700 font-medium transition-colors">
+					{currentPage < totalPages && (
+						<a 
+							href={`/page/${currentPage + 1}`} 
+							class="px-4 py-2 text-blue-600 hover:text-blue-700 font-medium transition-colors"
+						>
 							Kitas →
 						</a>
 					)}
