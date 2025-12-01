@@ -3,7 +3,7 @@ const WP_BASE_URL = WP_API_URL.replace('/wp-json/wp/v2', '');
 const EASY_IO_CDN = 'enbxd79stev.exactdn.com';
 
 // Number of posts per page - change this to show more/less posts
-export const POSTS_PER_PAGE = 6;
+export const POSTS_PER_PAGE = 9;
 
 // Convert WordPress image URLs to Easy IO CDN for WebP/AVIF and optimization
 export function toEasyIOUrl(url) {
