@@ -1,0 +1,36 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="lt">
+	<head>
+		<BaseHead title={`Puslapis nerastas - ${SITE_TITLE}`} description="Puslapis, kurio ieškote, neegzistuoja." />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+	</head>
+	<body class="bg-stone-50" style="font-family: 'Inter', sans-serif;">
+		<Header />
+		<main class="container mx-auto px-4 py-16 max-w-2xl text-center">
+			<h1 class="text-9xl font-bold text-gray-300 mb-4">404</h1>
+			<h2 class="text-2xl font-semibold text-gray-800 mb-4">Puslapis nerastas</h2>
+			<p class="text-gray-600 mb-8">
+				Atsiprašome, bet puslapis, kurio ieškote, neegzistuoja arba buvo perkeltas.
+			</p>
+			<a 
+				href="/" 
+				class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+			>
+				<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+				</svg>
+				Grįžti į pradžią
+			</a>
+		</main>
+		<Footer />
+	</body>
+</html>
