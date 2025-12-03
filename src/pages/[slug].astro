@@ -21,13 +21,10 @@ const { page } = Astro.props;
 <html lang="lt">
 	<head>
 		<BaseHead title={page.title.rendered} description={page.excerpt.rendered.replace(/<[^>]*>/g, '')} />
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@wordpress/block-library@latest/build-style/style.min.css">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@wordpress/block-library@latest/build-style/theme.min.css">
 	</head>
-	<body class="bg-stone-50" style="font-family: 'Inter', sans-serif;">
+	<body>
 		<Header />
 		<main class="container mx-auto px-4 py-12 max-w-5xl">
 			<article class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">

@@ -183,6 +183,8 @@ ul.wp-block-list {
 body {
 	margin: 0;
 	padding: 0;
+	font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+	background-color: #fafaf9; /* stone-50 */
 }
 
 .sr-only {
