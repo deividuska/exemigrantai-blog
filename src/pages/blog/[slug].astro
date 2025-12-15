@@ -3,7 +3,7 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import ScrollToTop from '../../components/ScrollToTop.astro';
-import { getAllPosts, getPost, toEasyIOUrl } from '../../lib/wordpress';
+import { getAllPosts, getPost, toEasyIOUrl, getSeoDescription } from '../../lib/wordpress';
 import '../../styles/global.css';
 
 export async function getStaticPaths() {
@@ -20,6 +20,9 @@ const post = await getPost(slug);
 const categories = post._embedded?.['wp:term']?.[0] || [];
 const featuredImage = toEasyIOUrl(post._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.large?.source_url || post._embedded?.['wp:featuredmedia']?.[0]?.source_url);
 
+// Get SEO description (from SEO plugin or fallback to excerpt)
+const seoDescription = getSeoDescription(post);
+
 // Calculate reading time
 const wordCount = post.content.rendered.replace(/<[^>]*>/g, '').split(/\s+/).length;
 const readingTime = Math.ceil(wordCount / 200);
@@ -28,7 +31,7 @@ const readingTime = Math.ceil(wordCount / 200);
 <!doctype html>
 <html lang="lt">
 	<head>
-		<BaseHead title={post.title.rendered} description={post.excerpt.rendered.replace(/<[^>]*>/g, '')} />
+		<BaseHead title={post.title.rendered} description={seoDescription} />
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@wordpress/block-library@latest/build-style/style.min.css">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@wordpress/block-library@latest/build-style/theme.min.css">
 	</head>

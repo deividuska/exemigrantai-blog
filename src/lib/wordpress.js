@@ -11,6 +11,29 @@ export function toEasyIOUrl(url) {
   return url.replace('wp.exemigrantai.lt', EASY_IO_CDN);
 }
 
+// Get SEO description from post - checks SEO Framework fields first, then falls back to excerpt
+export function getSeoDescription(post) {
+  // The SEO Framework custom REST field (requires functions.php snippet)
+  if (post?.seo_description) {
+    return post.seo_description;
+  }
+  
+  // Other SEO plugins
+  const seoDescription = 
+    post?.yoast_head_json?.description ||  // Yoast
+    post?.rank_math?.description ||         // Rank Math
+    null;
+  
+  if (seoDescription) {
+    return seoDescription;
+  }
+  
+  // Fallback to excerpt (strip HTML and limit length)
+  const excerpt = post?.excerpt?.rendered?.replace(/<[^>]*>/g, '').trim() || '';
+  // Limit to ~160 characters for SEO
+  return excerpt.length > 160 ? excerpt.substring(0, 157) + '...' : excerpt;
+}
+
 // Get total number of posts
 export async function getTotalPosts() {
   try {
