@@ -11,11 +11,25 @@ export function toEasyIOUrl(url) {
   return url.replace('wp.exemigrantai.lt', EASY_IO_CDN);
 }
 
+// Decode HTML entities (e.g., &#x2d; → -, &amp; → &)
+export function decodeHtmlEntities(text) {
+  if (!text) return '';
+  return text
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, ' ');
+}
+
 // Get SEO description from post - checks SEO Framework fields first, then falls back to excerpt
 export function getSeoDescription(post) {
   // The SEO Framework custom REST field (requires functions.php snippet)
   if (post?.seo_description) {
-    return post.seo_description;
+    return decodeHtmlEntities(post.seo_description);
   }
   
   // Other SEO plugins
@@ -25,20 +39,21 @@ export function getSeoDescription(post) {
     null;
   
   if (seoDescription) {
-    return seoDescription;
+    return decodeHtmlEntities(seoDescription);
   }
   
   // Fallback to excerpt (strip HTML and limit length)
   const excerpt = post?.excerpt?.rendered?.replace(/<[^>]*>/g, '').trim() || '';
+  const decoded = decodeHtmlEntities(excerpt);
   // Limit to ~160 characters for SEO
-  return excerpt.length > 160 ? excerpt.substring(0, 157) + '...' : excerpt;
+  return decoded.length > 160 ? decoded.substring(0, 157) + '...' : decoded;
 }
 
 // Get SEO title from post - checks SEO Framework fields first, then falls back to post title
 export function getSeoTitle(post) {
   // The SEO Framework custom REST field (requires functions.php snippet)
   if (post?.seo_title) {
-    return post.seo_title;
+    return decodeHtmlEntities(post.seo_title);
   }
   
   // Other SEO plugins
@@ -48,11 +63,11 @@ export function getSeoTitle(post) {
     null;
   
   if (seoTitle) {
-    return seoTitle;
+    return decodeHtmlEntities(seoTitle);
   }
   
-  // Fallback to post title (strip HTML entities)
-  return post?.title?.rendered || '';
+  // Fallback to post title (decode HTML entities)
+  return decodeHtmlEntities(post?.title?.rendered || '');
 }
 
 // Get total number of posts
