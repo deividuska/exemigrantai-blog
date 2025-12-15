@@ -3,7 +3,7 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import ScrollToTop from '../../components/ScrollToTop.astro';
-import { getAllPosts, getPost, toEasyIOUrl, getSeoDescription, getSeoTitle } from '../../lib/wordpress';
+import { getAllPosts, getPost, toEasyIOUrl, getSeoDescription, getSeoTitle, getOgTitle, getOgDescription, getTwitterTitle, getTwitterDescription, getSocialImage } from '../../lib/wordpress';
 import '../../styles/global.css';
 
 export async function getStaticPaths() {
@@ -24,6 +24,13 @@ const featuredImage = toEasyIOUrl(post._embedded?.['wp:featuredmedia']?.[0]?.med
 const seoTitle = getSeoTitle(post);
 const seoDescription = getSeoDescription(post);
 
+// Get OG/Twitter specific values
+const ogTitle = getOgTitle(post);
+const ogDescription = getOgDescription(post);
+const twitterTitle = getTwitterTitle(post);
+const twitterDescription = getTwitterDescription(post);
+const socialImage = toEasyIOUrl(getSocialImage(post)) || featuredImage;
+
 // Calculate reading time
 const wordCount = post.content.rendered.replace(/<[^>]*>/g, '').split(/\s+/).length;
 const readingTime = Math.ceil(wordCount / 200);
@@ -32,7 +39,15 @@ const readingTime = Math.ceil(wordCount / 200);
 <!doctype html>
 <html lang="lt">
 	<head>
-		<BaseHead title={seoTitle} description={seoDescription} />
+		<BaseHead 
+			title={seoTitle} 
+			description={seoDescription}
+			image={socialImage}
+			ogTitle={ogTitle}
+			ogDescription={ogDescription}
+			twitterTitle={twitterTitle}
+			twitterDescription={twitterDescription}
+		/>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@wordpress/block-library@latest/build-style/style.min.css">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@wordpress/block-library@latest/build-style/theme.min.css">
 	</head>

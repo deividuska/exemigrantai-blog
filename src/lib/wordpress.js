@@ -70,6 +70,48 @@ export function getSeoTitle(post) {
   return decodeHtmlEntities(post?.title?.rendered || '');
 }
 
+// Get OG title - falls back to SEO title
+export function getOgTitle(post) {
+  if (post?.seo_og_title) {
+    return decodeHtmlEntities(post.seo_og_title);
+  }
+  return getSeoTitle(post);
+}
+
+// Get OG description - falls back to SEO description
+export function getOgDescription(post) {
+  if (post?.seo_og_description) {
+    return decodeHtmlEntities(post.seo_og_description);
+  }
+  return getSeoDescription(post);
+}
+
+// Get Twitter title - falls back to OG title, then SEO title
+export function getTwitterTitle(post) {
+  if (post?.seo_twitter_title) {
+    return decodeHtmlEntities(post.seo_twitter_title);
+  }
+  return getOgTitle(post);
+}
+
+// Get Twitter description - falls back to OG description, then SEO description
+export function getTwitterDescription(post) {
+  if (post?.seo_twitter_description) {
+    return decodeHtmlEntities(post.seo_twitter_description);
+  }
+  return getOgDescription(post);
+}
+
+// Get social image URL from SEO Framework
+export function getSocialImage(post) {
+  // SEO Framework custom social image
+  if (post?.seo_social_image) {
+    return post.seo_social_image;
+  }
+  // Fallback to featured image
+  return post?._embedded?.['wp:featuredmedia']?.[0]?.source_url || '';
+}
+
 // Get total number of posts
 export async function getTotalPosts() {
   try {
