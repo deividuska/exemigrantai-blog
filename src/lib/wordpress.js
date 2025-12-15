@@ -34,6 +34,27 @@ export function getSeoDescription(post) {
   return excerpt.length > 160 ? excerpt.substring(0, 157) + '...' : excerpt;
 }
 
+// Get SEO title from post - checks SEO Framework fields first, then falls back to post title
+export function getSeoTitle(post) {
+  // The SEO Framework custom REST field (requires functions.php snippet)
+  if (post?.seo_title) {
+    return post.seo_title;
+  }
+  
+  // Other SEO plugins
+  const seoTitle = 
+    post?.yoast_head_json?.title ||  // Yoast
+    post?.rank_math?.title ||         // Rank Math
+    null;
+  
+  if (seoTitle) {
+    return seoTitle;
+  }
+  
+  // Fallback to post title (strip HTML entities)
+  return post?.title?.rendered || '';
+}
+
 // Get total number of posts
 export async function getTotalPosts() {
   try {
