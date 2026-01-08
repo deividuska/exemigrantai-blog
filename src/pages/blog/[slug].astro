@@ -86,7 +86,20 @@ const readingTime = Math.ceil(wordCount / 200);
 						</time>
 						<span>•</span>
 						<span>{readingTime} min skaitymo</span>
+						<span>•</span>
+						<span><span id="view-count">—</span> peržiūrų</span>
 					</div>
+					
+					<script define:vars={{ slug }}>
+						fetch(`https://api.counterapi.dev/v1/exemigrantai/${slug}/up`)
+							.then(r => r.json())
+							.then(data => {
+								document.getElementById('view-count').textContent = data.count;
+							})
+							.catch(() => {
+								document.getElementById('view-count').textContent = '0';
+							});
+					</script>
 					
 					<div class="prose prose-lg mx-auto" set:html={post.content.rendered} />
 				</div>
