@@ -10,7 +10,6 @@ const posts = defineCollection({
         .transform((value) =>
           value instanceof Date ? value.toISOString().slice(0, 16) : value
         ),
-      excerpt: z.string(),
       category: z.string().default('Naujienos'),
       featuredImage: image().optional(),
       featuredImageAlt: z.string().optional(),

@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import type { PostEntry } from '../lib/content';
-import { formatLithuanianDate } from '../lib/content';
+import { formatLithuanianDate, getPostExcerpt } from '../lib/content';
 
 interface Props {
   post: PostEntry;
@@ -11,6 +11,7 @@ interface Props {
 const { post, eager = false } = Astro.props;
 const category = post.data.category?.trim();
 const imageAlt = post.data.featuredImageAlt || post.data.title;
+const excerpt = getPostExcerpt(post);
 ---
 
 <article class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200">
@@ -48,7 +49,7 @@ const imageAlt = post.data.featuredImageAlt || post.data.title;
     </time>
 
     <p class="text-gray-600 mb-6 line-clamp-3 text-base leading-relaxed">
-      {post.data.excerpt}
+      {excerpt}
     </p>
 
     <a

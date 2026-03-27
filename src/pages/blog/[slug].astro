@@ -5,8 +5,13 @@ import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import ScrollToTop from '../../components/ScrollToTop.astro';
 import StructuredData from '../../components/StructuredData.astro';
-import { estimateReadingTime, formatLithuanianDate, getAllPosts } from '../../lib/content';
-import { parsePublishedAt } from '../../lib/content';
+import {
+	estimateReadingTime,
+	formatLithuanianDate,
+	getAllPosts,
+	getPostExcerpt,
+	parsePublishedAt,
+} from '../../lib/content';
 import { SITE_TITLE, SITE_URL } from '../../consts';
 import '../../styles/global.css';
 
@@ -22,8 +27,9 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { slug } = Astro.params;
 const { Content } = await post.render();
+const excerpt = getPostExcerpt(post);
 const seoTitle = post.data.seoTitle || post.data.title;
-const seoDescription = post.data.seoDescription || post.data.excerpt;
+const seoDescription = post.data.seoDescription || excerpt;
 const socialImage = post.data.featuredImage?.src;
 const readingTime = estimateReadingTime(post.body);
 const publishedAt = parsePublishedAt(post.data.publishedAt).toISOString();

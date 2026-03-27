@@ -39,11 +39,6 @@ export default config({
           label: 'Published at',
           validation: { isRequired: true },
         }),
-        excerpt: fields.text({
-          label: 'Excerpt',
-          multiline: true,
-          validation: { isRequired: true },
-        }),
         category: fields.text({
           label: 'Category',
           defaultValue: 'Naujienos',

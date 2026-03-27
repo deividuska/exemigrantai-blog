@@ -41,6 +41,36 @@ export function estimateReadingTime(content: string) {
   return Math.max(1, Math.ceil(wordCount / 200));
 }
 
+function stripMarkdown(content: string) {
+  return content
+    .replace(/^---[\s\S]*?---\s*/m, '')
+    .replace(/!\[[^\]]*]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]+)]\([^)]*\)/g, '$1')
+    .replace(/`{1,3}([^`]*)`{1,3}/g, '$1')
+    .replace(/^\s{0,3}#{1,6}\s+/gm, '')
+    .replace(/^\s{0,3}>\s?/gm, '')
+    .replace(/^\s*[-*+]\s+/gm, '')
+    .replace(/^\s*\d+\.\s+/gm, '')
+    .replace(/\|/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function truncateExcerpt(content: string, maxLength = 180) {
+  if (content.length <= maxLength) {
+    return content;
+  }
+
+  const truncated = content.slice(0, maxLength + 1);
+  const lastSpace = truncated.lastIndexOf(' ');
+  return `${(lastSpace > 100 ? truncated.slice(0, lastSpace) : content.slice(0, maxLength)).trim()}...`;
+}
+
+export function getPostExcerpt(post: PostEntry) {
+  return truncateExcerpt(stripMarkdown(post.body));
+}
+
 function sortPosts(posts: PostEntry[]) {
   return posts.sort(
     (left, right) =>
