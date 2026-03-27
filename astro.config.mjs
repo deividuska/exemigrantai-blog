@@ -19,7 +19,7 @@ export default defineConfig({
   integrations: [react(), markdoc(), keystatic(), sitemap()],
 
   build: {
-    inlineStylesheets: 'auto',
+    inlineStylesheets: 'always',
   },
 
   vite: {
