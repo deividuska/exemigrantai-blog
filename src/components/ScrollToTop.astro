@@ -13,12 +13,12 @@
 		position: fixed;
 		bottom: 2rem;
 		right: 2rem;
-		width: 48px;
-		height: 48px;
-		border-radius: 50%;
-		background-color: rgb(var(--accent));
-		color: #374151;
-		border: none;
+		width: 52px;
+		height: 52px;
+		border-radius: 999px;
+		background: rgba(255, 251, 245, 0.92);
+		color: var(--surface-ink);
+		border: 1px solid rgba(97, 78, 57, 0.14);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
@@ -26,13 +26,15 @@
 		opacity: 0;
 		visibility: hidden;
 		transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
-		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+		box-shadow: 0 20px 35px rgba(34, 28, 21, 0.14);
+		backdrop-filter: blur(14px);
 		z-index: 1000;
 	}
 
 	#scroll-to-top:hover {
 		transform: translateY(-3px);
-		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+		color: var(--accent-deep);
+		box-shadow: 0 22px 42px rgba(34, 28, 21, 0.18);
 	}
 
 	#scroll-to-top.visible {
@@ -49,8 +51,8 @@
 		#scroll-to-top {
 			bottom: 1.5rem;
 			right: 1.5rem;
-			width: 44px;
-			height: 44px;
+			width: 46px;
+			height: 46px;
 		}
 	}
 </style>

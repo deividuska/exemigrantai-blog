@@ -1,226 +1,262 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
 import ScrollToTop from '../components/ScrollToTop.astro';
 import { SITE_TITLE } from '../consts';
 ---
 
 <!doctype html>
 <html lang="lt">
-	<head>
-		<BaseHead title={`Kontaktai - ${SITE_TITLE}`} description="Susisiekite su mumis" />
-		<style>
-			main {
-				width: 100%;
-				max-width: 720px;
-				margin: 0 auto;
-				padding: 2rem 1rem;
-			}
-			
-			h1 {
-				font-size: 2.5rem;
-				margin-bottom: 0.5rem;
-				color: #1f2937;
-			}
-			
-			.intro {
-				color: #6b7280;
-				margin-bottom: 2rem;
-				font-size: 1.1rem;
-			}
-			
-			.contact-form {
-				background: #f9fafb;
-				padding: 2rem;
-				border-radius: 12px;
-				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-			}
-			
-			.form-group {
-				margin-bottom: 1.5rem;
-			}
-			
-			label {
-				display: block;
-				margin-bottom: 0.5rem;
-				font-weight: 600;
-				color: #374151;
-			}
-			
-			input[type="text"],
-			input[type="email"],
-			textarea {
-				width: 100%;
-				padding: 0.75rem 1rem;
-				border: 1px solid #d1d5db;
-				border-radius: 8px;
-				font-size: 1rem;
-				font-family: inherit;
-				transition: border-color 0.2s, box-shadow 0.2s;
-				box-sizing: border-box;
-			}
-			
-			input[type="text"]:focus,
-			input[type="email"]:focus,
-			textarea:focus {
-				outline: none;
-				border-color: #2563eb;
-				box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-			}
-			
-			textarea {
-				min-height: 150px;
-				resize: vertical;
-			}
-			
-			button[type="submit"] {
-				background: #2563eb;
-				color: white;
-				padding: 0.875rem 2rem;
-				border: none;
-				border-radius: 8px;
-				font-size: 1rem;
-				font-weight: 600;
-				cursor: pointer;
-				transition: background-color 0.2s;
-				width: 100%;
-			}
-			
-			button[type="submit"]:hover {
-				background: #1d4ed8;
-			}
-			
-			button[type="submit"]:active {
-				background: #1e40af;
-			}
-			
-			.contact-info {
-				margin-top: 2rem;
-				padding: 1.5rem;
-				background: white;
-				border-radius: 12px;
-				border: 1px solid #e5e7eb;
-			}
-			
-			.contact-info h2 {
-				font-size: 1.25rem;
-				margin-bottom: 1rem;
-				color: #1f2937;
-			}
-			
-			.contact-info a {
-				color: #2563eb;
-				text-decoration: none;
-			}
-			
-			.contact-info a:hover {
-				text-decoration: underline;
-			}
-			
-			.success-message {
-				background: #d1fae5;
-				color: #065f46;
-				padding: 1rem;
-				border-radius: 8px;
-				margin-bottom: 1.5rem;
-				display: none;
-			}
-			
-			.error-message {
-				background: #fee2e2;
-				color: #991b1b;
-				padding: 1rem;
-				border-radius: 8px;
-				margin-bottom: 1.5rem;
-				display: none;
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>Kontaktai</h1>
-			<p class="intro">Turite klausimų? Parašykite mums ir mes atsakysime kuo greičiau.</p>
-			
-			<div class="contact-form">
-				<div class="success-message" id="success">
-					Jūsų žinutė sėkmingai išsiųsta! Atsakysime kuo greičiau.
-				</div>
-				<div class="error-message" id="error">
-					Įvyko klaida. Bandykite dar kartą arba parašykite tiesiogiai el. paštu.
-				</div>
-				
-				<form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
-					<input type="hidden" name="access_key" value="5c4a4e28-f008-47f4-92d6-0808c2d4120f" />
-					<input type="hidden" name="subject" value="Nauja žinutė iš exemigrantai.lt" />
-					<input type="hidden" name="from_name" value="Exemigrantai.lt kontaktų forma" />
-					<input type="checkbox" name="botcheck" style="display: none;" />
-					
-					<div class="form-group">
-						<label for="name">Vardas</label>
-						<input type="text" id="name" name="name" required placeholder="Jūsų vardas" />
-					</div>
-					
-					<div class="form-group">
-						<label for="email">El. paštas</label>
-						<input type="email" id="email" name="email" required placeholder="jusu@email.lt" />
-					</div>
-					
-					<div class="form-group">
-						<label for="message">Žinutė</label>
-						<textarea id="message" name="message" required placeholder="Jūsų žinutė..."></textarea>
-					</div>
-					
-					<button type="submit">Siųsti žinutę</button>
-				</form>
-			</div>
-			
-			<div class="contact-info">
-				<h2>Kiti būdai susisiekti</h2>
-				<p>Facebook grupė: <a href="https://www.facebook.com/groups/372993659852080" target="_blank" rel="noopener noreferrer">Exemigrantai</a></p>
-			</div>
-		</main>
-		<Footer />
-		<ScrollToTop />
-		
-		<script>
-			const form = document.getElementById('contact-form') as HTMLFormElement;
-			const successMsg = document.getElementById('success') as HTMLElement;
-			const errorMsg = document.getElementById('error') as HTMLElement;
-			
-			form?.addEventListener('submit', async (e) => {
-				e.preventDefault();
-				
-				const formData = new FormData(form);
-				const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
-				const originalText = submitBtn.textContent;
-				submitBtn.textContent = 'Siunčiama...';
-				submitBtn.disabled = true;
-				
-				try {
-					const response = await fetch(form.action, {
-						method: 'POST',
-						body: formData
-					});
-					
-					const result = await response.json();
-					
-					if (result.success) {
-						successMsg.style.display = 'block';
-						errorMsg.style.display = 'none';
-						form.reset();
-					} else {
-						throw new Error('Form submission failed');
-					}
-				} catch (error) {
-					errorMsg.style.display = 'block';
-					successMsg.style.display = 'none';
-				} finally {
-					submitBtn.textContent = originalText;
-					submitBtn.disabled = false;
-				}
-			});
-		</script>
-	</body>
+  <head>
+    <BaseHead title={`Kontaktai - ${SITE_TITLE}`} description="Susisiekite su mumis" />
+  </head>
+  <body>
+    <Header />
+    <main class="page-shell contact-shell">
+      <section class="contact-hero">
+        <div>
+          <span class="eyebrow">Kontaktai</span>
+          <h1 class="section-title">Parašykite mums</h1>
+        </div>
+        <p class="section-subtitle">
+          Jei turite klausimą, temą straipsniui ar norite pasidalinti savo patirtimi, parašykite.
+          Atsakome kuo paprasčiau ir kuo aiškiau.
+        </p>
+      </section>
+
+      <section class="contact-grid">
+        <div class="content-panel contact-card">
+          <div class="success-message" id="success">
+            Jūsų žinutė sėkmingai išsiųsta. Atsakysime kuo greičiau.
+          </div>
+          <div class="error-message" id="error">
+            Įvyko klaida. Bandykite dar kartą arba parašykite per Facebook grupę.
+          </div>
+
+          <form id="contact-form" action="https://api.web3forms.com/submit" method="POST" class="contact-form">
+            <input type="hidden" name="access_key" value="5c4a4e28-f008-47f4-92d6-0808c2d4120f" />
+            <input type="hidden" name="subject" value="Nauja žinutė iš exemigrantai.lt" />
+            <input type="hidden" name="from_name" value="Exemigrantai.lt kontaktų forma" />
+            <input type="checkbox" name="botcheck" style="display: none;" />
+
+            <label class="field">
+              <span>Vardas</span>
+              <input type="text" id="name" name="name" required placeholder="Jūsų vardas" />
+            </label>
+
+            <label class="field">
+              <span>El. paštas</span>
+              <input type="email" id="email" name="email" required placeholder="jusu@email.lt" />
+            </label>
+
+            <label class="field">
+              <span>Žinutė</span>
+              <textarea id="message" name="message" required placeholder="Kuo galime padėti?"></textarea>
+            </label>
+
+            <button type="submit" class="pill-link pill-link-primary submit-button">Siųsti žinutę</button>
+          </form>
+        </div>
+
+        <aside class="content-panel contact-aside">
+          <p class="contact-aside-label">Kiti būdai susisiekti</p>
+          <h2>Greitesnis atsakymas dažnai būna bendruomenėje</h2>
+          <p>
+            Jei klausimas aktualus ir kitiems lietuviams JK ar Lietuvoje, parašykite mūsų Facebook
+            grupėje. Ten lengviau pasidalinti patirtimi ir realiais pavyzdžiais.
+          </p>
+          <a
+            href="https://www.facebook.com/groups/372993659852080"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="pill-link pill-link-secondary"
+          >
+            Atidaryti Facebook grupę
+          </a>
+        </aside>
+      </section>
+    </main>
+    <Footer />
+    <ScrollToTop />
+
+    <script>
+      const form = document.getElementById('contact-form');
+      const successMsg = document.getElementById('success');
+      const errorMsg = document.getElementById('error');
+
+      form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Siunčiama...';
+        submitBtn.disabled = true;
+
+        try {
+          const response = await fetch(form.action, {
+            method: 'POST',
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            successMsg.style.display = 'block';
+            errorMsg.style.display = 'none';
+            form.reset();
+          } else {
+            throw new Error('Form submission failed');
+          }
+        } catch (error) {
+          errorMsg.style.display = 'block';
+          successMsg.style.display = 'none';
+        } finally {
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+        }
+      });
+    </script>
+  </body>
 </html>
+
+<style>
+  .contact-shell {
+    padding-top: 2.4rem;
+    padding-bottom: 1rem;
+  }
+
+  .contact-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 2rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.85fr);
+    gap: 1.4rem;
+    align-items: start;
+  }
+
+  .contact-card,
+  .contact-aside {
+    padding: 1.6rem;
+  }
+
+  .contact-form {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .field {
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .field span {
+    color: var(--surface-ink);
+    font-size: 0.93rem;
+    font-weight: 800;
+  }
+
+  .field input,
+  .field textarea {
+    width: 100%;
+    padding: 0.95rem 1rem;
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--text);
+    font: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  }
+
+  .field input:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: rgba(184, 100, 50, 0.45);
+    box-shadow: 0 0 0 4px rgba(184, 100, 50, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  .field textarea {
+    min-height: 12rem;
+    resize: vertical;
+  }
+
+  .submit-button {
+    justify-content: center;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .success-message,
+  .error-message {
+    display: none;
+    margin-bottom: 1rem;
+    padding: 1rem 1.1rem;
+    border-radius: 1rem;
+    font-weight: 700;
+  }
+
+  .success-message {
+    background: rgba(111, 125, 103, 0.12);
+    color: #41543d;
+  }
+
+  .error-message {
+    background: rgba(184, 100, 50, 0.12);
+    color: #8f4b23;
+  }
+
+  .contact-aside-label {
+    margin: 0;
+    color: var(--accent-deep);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .contact-aside h2 {
+    margin: 0.8rem 0 0.7rem;
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    line-height: 1.06;
+    letter-spacing: -0.04em;
+    color: var(--surface-ink);
+  }
+
+  .contact-aside p {
+    margin: 0 0 1.2rem;
+    color: var(--text-soft);
+    line-height: 1.8;
+  }
+
+  @media (max-width: 960px) {
+    .contact-hero,
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .contact-hero {
+      align-items: start;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .contact-shell {
+      padding-top: 1.6rem;
+    }
+
+    .contact-card,
+    .contact-aside {
+      padding: 1.2rem;
+    }
+  }
+</style>

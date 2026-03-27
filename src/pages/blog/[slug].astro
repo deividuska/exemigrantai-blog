@@ -6,14 +6,13 @@ import Header from '../../components/Header.astro';
 import ScrollToTop from '../../components/ScrollToTop.astro';
 import StructuredData from '../../components/StructuredData.astro';
 import {
-	estimateReadingTime,
-	formatLithuanianDate,
-	getAllPosts,
-	getPostExcerpt,
-	parsePublishedAt,
+  estimateReadingTime,
+  formatLithuanianDate,
+  getAllPosts,
+  getPostExcerpt,
+  parsePublishedAt,
 } from '../../lib/content';
 import { SITE_TITLE, SITE_URL } from '../../consts';
-import '../../styles/global.css';
 
 export async function getStaticPaths() {
   const posts = await getAllPosts();
@@ -35,113 +34,201 @@ const readingTime = estimateReadingTime(post.body);
 const publishedAt = parsePublishedAt(post.data.publishedAt).toISOString();
 const pageUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const structuredData = {
-	'@context': 'https://schema.org',
-	'@type': 'BlogPosting',
-	headline: post.data.title,
-	description: seoDescription,
-	datePublished: publishedAt,
-	mainEntityOfPage: pageUrl,
-	url: pageUrl,
-	inLanguage: 'lt',
-	articleSection: post.data.category || undefined,
-	image: socialImage
-		? {
-				'@type': 'ImageObject',
-				url: socialImage.startsWith('http') ? socialImage : new URL(socialImage, Astro.site).toString(),
-				width: post.data.featuredImage?.width,
-				height: post.data.featuredImage?.height,
-			}
-		: undefined,
-	publisher: {
-		'@type': 'Organization',
-		name: SITE_TITLE,
-		url: `${SITE_URL}/`,
-	},
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: seoDescription,
+  datePublished: publishedAt,
+  mainEntityOfPage: pageUrl,
+  url: pageUrl,
+  inLanguage: 'lt',
+  articleSection: post.data.category || undefined,
+  image: socialImage
+    ? {
+        '@type': 'ImageObject',
+        url: socialImage.startsWith('http') ? socialImage : new URL(socialImage, Astro.site).toString(),
+        width: post.data.featuredImage?.width,
+        height: post.data.featuredImage?.height,
+      }
+    : undefined,
+  publisher: {
+    '@type': 'Organization',
+    name: SITE_TITLE,
+    url: `${SITE_URL}/`,
+  },
 };
 ---
 
 <!doctype html>
 <html lang="lt">
-	<head>
-		<BaseHead 
-			title={seoTitle} 
-			description={seoDescription}
-			image={socialImage}
-			ogType="article"
-			ogTitle={seoTitle}
-			ogDescription={seoDescription}
-			twitterTitle={seoTitle}
-			twitterDescription={seoDescription}
-		/>
-		<meta property="article:published_time" content={publishedAt} />
-		<StructuredData data={structuredData} />
-	</head>
-	<body>
-		<Header />
-		<main class="container mx-auto px-4 py-12 max-w-5xl">
-			<article class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-				{post.data.featuredImage && (
-					<Image
-						src={post.data.featuredImage}
-						alt={post.data.featuredImageAlt || post.data.title}
-						class="w-full h-96 object-cover"
-						quality={70}
-						widths={[720, 1024, 1440]}
-						sizes="(min-width: 1280px) 1024px, calc(100vw - 2rem)"
-					/>
-				)}
-				
-				<div class="p-8 md:p-12">
-					{post.data.category && (
-						<div class="flex gap-2 mb-6 flex-wrap">
-							<span class="text-xs font-medium bg-blue-50 text-blue-700 px-3 py-1.5 rounded uppercase tracking-wide">
-								{post.data.category}
-							</span>
-						</div>
-					)}
-					
-					<h1 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900 leading-tight">
-						{post.data.title}
-					</h1>
-					
-					<div class="flex items-center gap-4 text-sm text-gray-500 mb-8 pb-8 border-b border-gray-200">
-						<time class="font-medium">
-							{formatLithuanianDate(post.data.publishedAt)}
-						</time>
-						<span>•</span>
-						<span>{readingTime} min skaitymo</span>
-						<span>•</span>
-						<span><span id="view-count">—</span> peržiūrų</span>
-					</div>
-					
-					<script define:vars={{ slug }}>
-						fetch(`https://api.counterapi.dev/v1/exemigrantai/${slug}/up`)
-							.then(r => r.json())
-							.then(data => {
-								document.getElementById('view-count').textContent = data.count;
-							})
-							.catch(() => {
-								document.getElementById('view-count').textContent = '0';
-							});
-					</script>
-					
-					<div class="prose prose-lg mx-auto">
-						<Content />
-					</div>
-				</div>
-			</article>
-			
-			<a 
-				href="/" 
-				class="inline-flex items-center mt-8 text-blue-600 hover:text-blue-700 font-semibold transition-colors group"
-			>
-				<svg class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-				</svg>
-				Atgal į pradžią
-			</a>
-		</main>
-		<Footer />
-		<ScrollToTop />
-	</body>
+  <head>
+    <BaseHead
+      title={seoTitle}
+      description={seoDescription}
+      image={socialImage}
+      ogType="article"
+      ogTitle={seoTitle}
+      ogDescription={seoDescription}
+      twitterTitle={seoTitle}
+      twitterDescription={seoDescription}
+    />
+    <meta property="article:published_time" content={publishedAt} />
+    <StructuredData data={structuredData} />
+  </head>
+  <body>
+    <Header />
+    <main class="page-shell article-shell">
+      <a href="/" class="article-backlink">← Visi straipsniai</a>
+
+      <section class="article-hero">
+        <div class="article-copy">
+          {post.data.category && <span class="eyebrow">{post.data.category}</span>}
+
+          <h1 class="article-title">{post.data.title}</h1>
+
+          <p class="article-summary">{excerpt}</p>
+
+          <div class="article-meta">
+            <time>{formatLithuanianDate(post.data.publishedAt)}</time>
+            <span>•</span>
+            <span>{readingTime} min skaitymo</span>
+            <span>•</span>
+            <span><span id="view-count">—</span> peržiūrų</span>
+          </div>
+        </div>
+
+        {post.data.featuredImage && (
+          <div class="article-hero-media">
+            <Image
+              src={post.data.featuredImage}
+              alt={post.data.featuredImageAlt || post.data.title}
+              class="article-hero-image"
+              quality={70}
+              widths={[720, 1024, 1440]}
+              sizes="(min-width: 1280px) 560px, (min-width: 768px) 44vw, 100vw"
+            />
+          </div>
+        )}
+      </section>
+
+      <article class="article-panel content-panel">
+        <script define:vars={{ slug }}>
+          fetch(`https://api.counterapi.dev/v1/exemigrantai/${slug}/up`)
+            .then((r) => r.json())
+            .then((data) => {
+              document.getElementById('view-count').textContent = data.count;
+            })
+            .catch(() => {
+              document.getElementById('view-count').textContent = '0';
+            });
+        </script>
+
+        <div class="article-prose prose">
+          <Content />
+        </div>
+      </article>
+    </main>
+    <Footer />
+    <ScrollToTop />
+  </body>
 </html>
+
+<style>
+  .article-shell {
+    padding-top: 2.3rem;
+    padding-bottom: 1rem;
+  }
+
+  .article-backlink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--accent-deep);
+    text-decoration: none;
+    font-weight: 800;
+    margin-bottom: 1.2rem;
+  }
+
+  .article-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.78fr);
+    gap: 1.5rem;
+    align-items: end;
+  }
+
+  .article-copy {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .article-title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(2.4rem, 5vw, 5rem);
+    line-height: 0.96;
+    letter-spacing: -0.05em;
+    color: var(--surface-ink);
+    text-wrap: balance;
+  }
+
+  .article-summary {
+    margin: 0;
+    max-width: 43rem;
+    color: var(--text-soft);
+    font-size: 1.14rem;
+    line-height: 1.95;
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--text-faint);
+    font-weight: 700;
+  }
+
+  .article-hero-media {
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.55);
+  }
+
+  .article-hero-image {
+    width: 100%;
+    height: 100%;
+    min-height: 22rem;
+    object-fit: cover;
+  }
+
+  .article-panel {
+    margin-top: 2rem;
+    padding: 2rem;
+  }
+
+  .article-prose {
+    margin: 0 auto;
+  }
+
+  @media (max-width: 1024px) {
+    .article-hero {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .article-shell {
+      padding-top: 1.6rem;
+    }
+
+    .article-panel {
+      padding: 1.2rem;
+    }
+
+    .article-summary {
+      font-size: 1.02rem;
+    }
+  }
+</style>

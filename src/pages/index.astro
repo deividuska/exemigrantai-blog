@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
@@ -6,13 +7,19 @@ import PostCard from '../components/PostCard.astro';
 import ScrollToTop from '../components/ScrollToTop.astro';
 import StructuredData from '../components/StructuredData.astro';
 import { SITE_ALT_NAME, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '../consts';
-import { getPaginatedPosts, getSiteSettings, POSTS_PER_PAGE } from '../lib/content';
-import '../styles/global.css';
+import {
+  formatLithuanianDate,
+  getPaginatedPosts,
+  getPostExcerpt,
+  getSiteSettings,
+} from '../lib/content';
 
-const { posts, totalPages } = await getPaginatedPosts(1, POSTS_PER_PAGE);
+const { posts, totalPages } = await getPaginatedPosts(1);
 const settings = await getSiteSettings();
 const homepageTitle = settings.homepageTitle || 'Naujausi įrašai';
 const currentPage = 1;
+const [featuredPost, ...remainingPosts] = posts;
+const featuredExcerpt = featuredPost ? getPostExcerpt(featuredPost) : '';
 const structuredData = [
   {
     '@context': 'https://schema.org',
@@ -33,46 +40,358 @@ const structuredData = [
 
 <!doctype html>
 <html lang="lt">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<StructuredData data={structuredData} />
-	</head>
-	<body>
-		<Header />
-		<main class="container mx-auto px-4 py-16 max-w-6xl">
-			<h1 class="text-3xl font-bold text-center mb-12 text-gray-900">{homepageTitle}</h1>
-			
-			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-				{posts.map((post, index) => <PostCard post={post} eager={index === 0} />)}
-			</div>
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <StructuredData data={structuredData} />
+  </head>
+  <body>
+    <Header />
+    <main class="page-shell home-shell">
+      <section class="home-hero">
+        <div class="home-hero-copy">
+          <span class="eyebrow">Praktiška emigrantų biblioteka</span>
+          <h1 class="section-title">{homepageTitle}</h1>
+          <p class="section-subtitle">
+            Aiškūs straipsniai apie grįžimą į Lietuvą, JK dokumentus, išmokas ir kasdienius
+            sprendimus. Mažiau triukšmo, daugiau aiškumo.
+          </p>
+        </div>
 
-			{totalPages > 1 && (
-				<nav class="flex justify-center items-center gap-2 mt-12" aria-label="Puslapių navigacija">
-					<span class="px-4 py-2 text-gray-400 cursor-not-allowed">
-						← Ankstesnis
-					</span>
+        <div class="home-hero-note content-panel">
+          <p class="home-note-label">Reklamos vieta</p>
+          <p class="home-note-text">
+            Norite pasiekti lietuvius JK ir Lietuvoje? Čia gali būti jūsų reklama arba partnerio
+            pristatymas.
+          </p>
+          <a href="/kontaktai" class="pill-link pill-link-secondary home-note-link">Susisiekti</a>
+        </div>
+      </section>
 
-					{Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-						<a
-							href={page === 1 ? '/' : `/page/${page}`}
-							class={`px-4 py-2 rounded-lg font-medium transition-colors ${
-								page === currentPage
-									? 'bg-blue-600 text-white'
-									: 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
-							}`}
-							aria-current={page === currentPage ? 'page' : undefined}
-						>
-							{page}
-						</a>
-					))}
+      {featuredPost && (
+        <section class="lead-story content-panel">
+          <a href={`/blog/${featuredPost.slug}/`} class="lead-story-media">
+            {featuredPost.data.featuredImage && (
+              <Image
+                src={featuredPost.data.featuredImage}
+                alt={featuredPost.data.featuredImageAlt || featuredPost.data.title}
+                class="lead-story-image"
+                loading="eager"
+                fetchpriority="high"
+                quality={72}
+                widths={[640, 900, 1200]}
+                sizes="(min-width: 1024px) 44rem, 100vw"
+              />
+            )}
+          </a>
 
-					<a href="/page/2" class="px-4 py-2 text-blue-600 hover:text-blue-700 font-medium transition-colors">
-						Kitas →
-					</a>
-				</nav>
-			)}
-		</main>
-		<Footer />
-		<ScrollToTop />
-	</body>
+          <div class="lead-story-body">
+            {featuredPost.data.category && (
+              <span class="eyebrow">{featuredPost.data.category}</span>
+            )}
+
+            <div class="lead-story-meta">
+              <span>Naujausias straipsnis</span>
+              <span>•</span>
+              <time>{formatLithuanianDate(featuredPost.data.publishedAt)}</time>
+            </div>
+
+            <h2 class="lead-story-title">
+              <a href={`/blog/${featuredPost.slug}/`}>{featuredPost.data.title}</a>
+            </h2>
+
+            <p class="lead-story-excerpt">{featuredExcerpt}</p>
+
+            <div class="lead-story-actions">
+              <a href={`/blog/${featuredPost.slug}/`} class="pill-link pill-link-primary">
+                Skaityti straipsnį
+              </a>
+              {totalPages > 1 && (
+                <a href="/page/2" class="pill-link pill-link-secondary">Naujausios temos</a>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section class="stories-section">
+        <div class="stories-header">
+          <div>
+            <p class="stories-label">Archyvas</p>
+            <h2 class="stories-title">Daugiau naujausių temų</h2>
+          </div>
+          <p class="stories-copy">
+            Rinkitės temą pagal tai, ko šiuo metu labiausiai reikia: dokumentus, išmokas, stažą,
+            persikraustymą ar praktinius sprendimus prieš grįžtant.
+          </p>
+        </div>
+
+        <div class="stories-grid">
+          {remainingPosts.map((post) => <PostCard post={post} />)}
+        </div>
+      </section>
+
+      {totalPages > 1 && (
+        <nav class="pagination-shell" aria-label="Puslapių navigacija">
+          <span class="pagination-link pagination-link-muted">← Ankstesnis</span>
+
+          <div class="pagination-pages">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <a
+                href={page === 1 ? '/' : `/page/${page}`}
+                class={`pagination-page ${page === currentPage ? 'pagination-page-active' : ''}`}
+                aria-current={page === currentPage ? 'page' : undefined}
+              >
+                {page}
+              </a>
+            ))}
+          </div>
+
+          <a href="/page/2" class="pagination-link">Kitas →</a>
+        </nav>
+      )}
+    </main>
+    <Footer />
+    <ScrollToTop />
+  </body>
 </html>
+
+<style>
+  .home-shell {
+    padding-top: 2.5rem;
+    padding-bottom: 1rem;
+  }
+
+  .home-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(18rem, 0.9fr);
+    gap: 1.4rem;
+    align-items: end;
+  }
+
+  .home-hero-copy {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .home-hero-note {
+    padding: 1.5rem;
+  }
+
+  .home-note-label {
+    margin: 0;
+    color: var(--accent-deep);
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .home-note-text {
+    margin: 0.7rem 0 0;
+    color: var(--text-soft);
+    line-height: 1.8;
+  }
+
+  .home-note-link {
+    margin-top: 1rem;
+    width: fit-content;
+  }
+
+  .lead-story {
+    display: grid;
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.88fr);
+    gap: 0;
+    margin-top: 2rem;
+    overflow: hidden;
+  }
+
+  .lead-story-media {
+    display: block;
+    min-height: 100%;
+    background: rgba(22, 32, 51, 0.05);
+  }
+
+  .lead-story-image {
+    width: 100%;
+    height: 100%;
+    min-height: 22rem;
+    object-fit: cover;
+  }
+
+  .lead-story-body {
+    display: grid;
+    align-content: center;
+    gap: 0.85rem;
+    padding: 1.7rem 1.75rem;
+  }
+
+  .lead-story-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    color: var(--text-faint);
+    font-weight: 700;
+  }
+
+  .lead-story-title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.9rem, 3.2vw, 2.95rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--surface-ink);
+    text-wrap: balance;
+  }
+
+  .lead-story-title a {
+    text-decoration: none;
+  }
+
+  .lead-story-excerpt {
+    margin: 0;
+    color: var(--text-soft);
+    font-size: 1rem;
+    line-height: 1.78;
+  }
+
+  .lead-story-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 0.15rem;
+  }
+
+  .stories-section {
+    margin-top: 3rem;
+  }
+
+  .stories-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stories-label {
+    margin: 0 0 0.45rem;
+    color: var(--accent-deep);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .stories-title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.9rem, 3.6vw, 3rem);
+    line-height: 1.03;
+    letter-spacing: -0.04em;
+    color: var(--surface-ink);
+  }
+
+  .stories-copy {
+    max-width: 32rem;
+    margin: 0;
+    color: var(--text-soft);
+    line-height: 1.8;
+  }
+
+  .stories-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.35rem;
+  }
+
+  .pagination-shell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 0.4rem;
+  }
+
+  .pagination-pages {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid var(--border);
+  }
+
+  .pagination-page,
+  .pagination-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.8rem;
+    padding: 0.85rem 1rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 800;
+  }
+
+  .pagination-page {
+    color: var(--text-soft);
+  }
+
+  .pagination-page-active {
+    background: var(--surface-ink);
+    color: #fffaf4;
+  }
+
+  .pagination-link {
+    color: var(--accent-deep);
+  }
+
+  .pagination-link-muted {
+    color: var(--text-faint);
+  }
+
+  @media (max-width: 1024px) {
+    .home-hero,
+    .lead-story,
+    .stories-header {
+      grid-template-columns: 1fr;
+    }
+
+    .stories-header {
+      align-items: start;
+    }
+
+    .stories-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lead-story-image {
+      min-height: 18rem;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .home-shell {
+      padding-top: 1.5rem;
+    }
+
+    .lead-story-body,
+    .home-hero-note {
+      padding: 1.4rem;
+    }
+
+    .lead-story-image {
+      min-height: 15rem;
+    }
+
+    .stories-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .pagination-shell {
+      flex-wrap: wrap;
+    }
+  }
+</style>

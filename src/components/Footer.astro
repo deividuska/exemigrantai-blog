@@ -5,38 +5,88 @@ const today = new Date();
 const settings = await getSiteSettings();
 ---
 
-<footer>
-	&copy; {today.getFullYear()} {settings.footerText}
-	<div class="social-links">
-		<a href={settings.facebookGroupUrl} target="_blank" rel="noopener noreferrer">
-			<span class="sr-only">Facebook grupė</span>
-			<svg viewBox="0 0 24 24" aria-hidden="true" width="32" height="32"
-				><path
-					fill="currentColor"
-					d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
-				></path></svg
-			>
-		</a>
-	</div>
+<footer class="site-footer">
+  <div class="page-shell footer-shell">
+    <div>
+      <p class="footer-label">Eks Emigrantai</p>
+      <p class="footer-copy">&copy; {today.getFullYear()} {settings.footerText}</p>
+    </div>
+
+    <div class="footer-actions">
+      <a href={settings.facebookGroupUrl} target="_blank" rel="noopener noreferrer" class="footer-link">
+        Prisijunkite prie Facebook grupės
+      </a>
+    </div>
+  </div>
 </footer>
+
 <style>
-	footer {
-		padding: 2em 1em 6em 1em;
-		background: #f5f5f4;
-		color: #6b7280;
-		text-align: center;
-	}
-	.social-links {
-		display: flex;
-		justify-content: center;
-		gap: 1em;
-		margin-top: 1em;
-	}
-	.social-links a {
-		text-decoration: none;
-		color: #6b7280;
-	}
-	.social-links a:hover {
-		color: #374151;
-	}
+  .site-footer {
+    padding: 3.5rem 0 4rem;
+  }
+
+  .footer-shell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.6rem 1.8rem;
+    border-top: 1px solid var(--border-strong);
+    color: var(--text-soft);
+  }
+
+  .footer-label,
+  .footer-copy {
+    margin: 0;
+  }
+
+  .footer-label {
+    color: var(--surface-ink);
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .footer-copy {
+    margin-top: 0.35rem;
+    font-size: 0.94rem;
+  }
+
+  .footer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.85rem 1.15rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.58);
+    border: 1px solid rgba(97, 78, 57, 0.12);
+    color: var(--surface-ink);
+    text-decoration: none;
+    font-weight: 700;
+    transition: transform 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  }
+
+  .footer-link::after {
+    content: '↗';
+    font-size: 0.94rem;
+  }
+
+  .footer-link:hover {
+    transform: translateY(-1px);
+    color: var(--accent-deep);
+    border-color: rgba(184, 100, 50, 0.24);
+  }
+
+  @media (max-width: 768px) {
+    .site-footer {
+      padding: 2.8rem 0 3.2rem;
+    }
+
+    .footer-shell {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1.2rem 0 0;
+    }
+  }
 </style>
