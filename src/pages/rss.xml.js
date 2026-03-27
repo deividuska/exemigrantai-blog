@@ -1,6 +1,6 @@
 import rss from '@astrojs/rss';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { getAllPosts } from '../lib/wordpress';
+import { getAllPosts } from '../lib/content';
 
 export async function GET(context) {
 	const posts = await getAllPosts();
@@ -9,9 +9,9 @@ export async function GET(context) {
 		description: SITE_DESCRIPTION,
 		site: context.site,
 		items: posts.map((post) => ({
-			title: post.title.rendered,
-			pubDate: new Date(post.date),
-			description: post.excerpt.rendered.replace(/<[^>]*>/g, ''),
+			title: post.data.title,
+			pubDate: new Date(post.data.publishedAt),
+			description: post.data.excerpt,
 			link: `/blog/${post.slug}/`,
 		})),
 	});

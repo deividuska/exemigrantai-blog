@@ -1,39 +1,27 @@
 ---
+import { Image } from 'astro:assets';
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import ScrollToTop from '../../components/ScrollToTop.astro';
-import { getAllPosts, getPost, toEasyIOUrl, getSeoDescription, getSeoTitle, getOgTitle, getOgDescription, getTwitterTitle, getTwitterDescription, getSocialImage } from '../../lib/wordpress';
+import { formatLithuanianDate, getAllPosts } from '../../lib/content';
 import '../../styles/global.css';
 
 export async function getStaticPaths() {
   const posts = await getAllPosts();
-  
-  return posts.map((post: any) => ({
+
+  return posts.map((post) => ({
     params: { slug: post.slug },
     props: { post },
   }));
 }
 
+const { post } = Astro.props;
 const { slug } = Astro.params;
-const post = await getPost(slug);
-const categories = post._embedded?.['wp:term']?.[0] || [];
-const featuredImage = toEasyIOUrl(post._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.large?.source_url || post._embedded?.['wp:featuredmedia']?.[0]?.source_url);
-
-// Get SEO title and description (from SEO plugin or fallback)
-const seoTitle = getSeoTitle(post);
-const seoDescription = getSeoDescription(post);
-
-// Get OG/Twitter specific values
-const ogTitle = getOgTitle(post);
-const ogDescription = getOgDescription(post);
-const twitterTitle = getTwitterTitle(post);
-const twitterDescription = getTwitterDescription(post);
-const socialImage = toEasyIOUrl(getSocialImage(post)) || featuredImage;
-
-// Calculate reading time
-const wordCount = post.content.rendered.replace(/<[^>]*>/g, '').split(/\s+/).length;
-const readingTime = Math.ceil(wordCount / 200);
+const { Content } = await post.render();
+const seoTitle = post.data.seoTitle || post.data.title;
+const seoDescription = post.data.seoDescription || post.data.excerpt;
+const socialImage = post.data.featuredImage?.src;
 ---
 
 <!doctype html>
@@ -43,49 +31,45 @@ const readingTime = Math.ceil(wordCount / 200);
 			title={seoTitle} 
 			description={seoDescription}
 			image={socialImage}
-			ogTitle={ogTitle}
-			ogDescription={ogDescription}
-			twitterTitle={twitterTitle}
-			twitterDescription={twitterDescription}
+			ogTitle={seoTitle}
+			ogDescription={seoDescription}
+			twitterTitle={seoTitle}
+			twitterDescription={seoDescription}
 		/>
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@wordpress/block-library@latest/build-style/style.min.css">
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@wordpress/block-library@latest/build-style/theme.min.css">
 	</head>
 	<body>
 		<Header />
 		<main class="container mx-auto px-4 py-12 max-w-5xl">
 			<article class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-				{featuredImage && (
-					<img 
-						src={featuredImage} 
-						alt={post.title.rendered}
+				{post.data.featuredImage && (
+					<Image
+						src={post.data.featuredImage}
+						alt={post.data.featuredImageAlt || post.data.title}
 						class="w-full h-96 object-cover"
+						widths={[720, 1024, 1440]}
+						sizes="(min-width: 1024px) 1024px, 100vw"
 					/>
 				)}
 				
 				<div class="p-8 md:p-12">
-					{categories.length > 0 && (
+					{post.data.category && (
 						<div class="flex gap-2 mb-6 flex-wrap">
-							{categories.map((cat: any) => (
-								<span class="text-xs font-medium bg-blue-50 text-blue-700 px-3 py-1.5 rounded uppercase tracking-wide">
-									{cat.name}
-								</span>
-							))}
+							<span class="text-xs font-medium bg-blue-50 text-blue-700 px-3 py-1.5 rounded uppercase tracking-wide">
+								{post.data.category}
+							</span>
 						</div>
 					)}
 					
-					<h1 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900 leading-tight" set:html={post.title.rendered} />
+					<h1 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900 leading-tight">
+						{post.data.title}
+					</h1>
 					
 					<div class="flex items-center gap-4 text-sm text-gray-500 mb-8 pb-8 border-b border-gray-200">
 						<time class="font-medium">
-							{new Date(post.date).toLocaleDateString('lt-LT', { 
-								year: 'numeric', 
-								month: 'long', 
-								day: 'numeric' 
-							})}
+							{formatLithuanianDate(post.data.publishedAt)}
 						</time>
 						<span>•</span>
-						<span>{readingTime} min skaitymo</span>
+						<span>{post.data.readingTime} min skaitymo</span>
 						<span>•</span>
 						<span><span id="view-count">—</span> peržiūrų</span>
 					</div>
@@ -101,7 +85,9 @@ const readingTime = Math.ceil(wordCount / 200);
 							});
 					</script>
 					
-					<div class="prose prose-lg mx-auto" set:html={post.content.rendered} />
+					<div class="prose prose-lg mx-auto">
+						<Content />
+					</div>
 				</div>
 			</article>
 			

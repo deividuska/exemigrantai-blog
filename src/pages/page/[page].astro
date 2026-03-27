@@ -2,37 +2,35 @@
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
+import PostCard from '../../components/PostCard.astro';
 import ScrollToTop from '../../components/ScrollToTop.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
-import { getPosts, getACFOptions, toEasyIOUrl, getTotalPosts, POSTS_PER_PAGE } from '../../lib/wordpress';
+import { getAllPosts, getPaginatedPosts, getSiteSettings, POSTS_PER_PAGE } from '../../lib/content';
 import '../../styles/global.css';
 
 export async function getStaticPaths() {
-	const totalPosts = await getTotalPosts();
+	const totalPosts = (await getAllPosts()).length;
 	const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
-	
-	// Generate paths for pages 2 and above (page 1 is index.astro)
 	const paths = [];
+
 	for (let page = 2; page <= totalPages; page++) {
 		paths.push({ params: { page: String(page) } });
 	}
-	
+
 	return paths;
 }
 
 const { page } = Astro.params;
 const currentPage = parseInt(page);
 
-// Redirect page 1 to home
 if (currentPage === 1) {
 	return Astro.redirect('/');
 }
 
-const { posts, totalPages, totalPosts } = await getPosts(currentPage, POSTS_PER_PAGE);
-const acfOptions = await getACFOptions();
-const homepageTitle = acfOptions.homepage_title || 'Naujausi įrašai';
+const { posts, totalPages } = await getPaginatedPosts(currentPage, POSTS_PER_PAGE);
+const settings = await getSiteSettings();
+const homepageTitle = settings.homepageTitle || 'Naujausi įrašai';
 
-// If no posts found for this page, redirect to home
 if (posts.length === 0) {
 	return Astro.redirect('/');
 }
@@ -49,76 +47,11 @@ if (posts.length === 0) {
 			<h1 class="text-3xl font-bold text-center mb-12 text-gray-900">{homepageTitle}</h1>
 			
 			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-				{posts.map((post, index) => {
-					// Use medium_large size (max 768px) for better performance
-					const featuredImageRaw = post._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.medium_large?.source_url || post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
-					const featuredImage = toEasyIOUrl(featuredImageRaw);
-					const categories = post._embedded?.['wp:term']?.[0]?.map(cat => cat.name) || [];
-					// First image is LCP - prioritize it
-					const isFirstImage = index === 0;
-					
-					return (
-						<article class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200">
-						{featuredImage && (
-							<a href={`/blog/${post.slug}`}>
-								<img 
-									src={featuredImage} 
-									alt={post.title.rendered}
-									class="w-full h-48 object-cover"
-									loading={isFirstImage ? "eager" : "lazy"}
-									fetchpriority={isFirstImage ? "high" : "auto"}
-									width="768"
-									height="384"
-								/>
-								</a>
-							)}
-							
-							<div class="p-6">
-								{categories.length > 0 && (
-									<div class="flex gap-2 mb-3 flex-wrap">
-										{categories.map(cat => (
-											<span class="text-xs font-medium bg-blue-50 text-blue-700 px-2.5 py-1 rounded uppercase tracking-wide">
-												{cat}
-											</span>
-										))}
-									</div>
-								)}
-								
-								<h2 class="text-lg font-semibold mb-2 leading-tight">
-									<a href={`/blog/${post.slug}`} class="text-gray-900 hover:text-blue-600 transition-colors">
-										{post.title.rendered}
-									</a>
-								</h2>
-								
-								<time class="text-sm text-gray-500 mb-4 block font-medium">
-									{new Date(post.date).toLocaleDateString('lt-LT', { 
-										year: 'numeric', 
-										month: 'long', 
-										day: 'numeric' 
-									})}
-								</time>
-								
-								<div class="text-gray-600 mb-6 line-clamp-3 text-base leading-relaxed" set:html={post.excerpt.rendered} />
-								
-								<a 
-									href={`/blog/${post.slug}`}
-									class="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors group"
-								>
-									Skaityti daugiau
-									<svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-									</svg>
-								</a>
-							</div>
-						</article>
-					);
-				})}
+				{posts.map((post, index) => <PostCard post={post} eager={index === 0} />)}
 			</div>
 
-			{/* Pagination */}
 			{totalPages > 1 && (
 				<nav class="flex justify-center items-center gap-2 mt-12" aria-label="Puslapių navigacija">
-					{/* Previous button */}
 					{currentPage > 1 && (
 						<a 
 							href={currentPage === 2 ? '/' : `/page/${currentPage - 1}`} 
@@ -128,22 +61,20 @@ if (posts.length === 0) {
 						</a>
 					)}
 
-					{/* Page numbers */}
-					{Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+					{Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
 						<a
-							href={page === 1 ? '/' : `/page/${page}`}
+							href={pageNumber === 1 ? '/' : `/page/${pageNumber}`}
 							class={`px-4 py-2 rounded-lg font-medium transition-colors ${
-								page === currentPage
+								pageNumber === currentPage
 									? 'bg-blue-600 text-white'
 									: 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
 							}`}
-							aria-current={page === currentPage ? 'page' : undefined}
+							aria-current={pageNumber === currentPage ? 'page' : undefined}
 						>
-							{page}
+							{pageNumber}
 						</a>
 					))}
 
-					{/* Next button */}
 					{currentPage < totalPages && (
 						<a 
 							href={`/page/${currentPage + 1}`} 

@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+
+  // Template only.
+  // Keep using your existing Cloudflare Pages dashboard config unless you
+  // intentionally want a Wrangler file to become the source of truth.
+  //
+  // Recommended first step for this project:
+  // npx wrangler pages download config emigrantai-blog
+
+  "name": "emigrantai-blog",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-03-27",
+  "compatibility_flags": ["nodejs_compat"],
+
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "<your-kv-namespace-id>"
+    }
+  ]
+}

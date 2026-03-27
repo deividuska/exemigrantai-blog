@@ -1,62 +1,76 @@
-# Astro Starter Kit: Blog
+# Eks Emigrantai
+
+Astro 5 blog for `https://exemigrantai.lt`, now using Keystatic Cloud and local Astro content instead of WordPress as a runtime backend.
+
+## Stack
+
+- Astro 5
+- Keystatic Cloud
+- Astro content collections
+- Markdoc (`.mdoc`) post content
+- Cloudflare adapter
+- Tailwind CSS 4
+
+## Content
+
+- Posts live in `src/content/posts/*/index.mdoc`
+- Site settings live in `src/content/settings/index.yaml`
+- Post images live in `src/assets/images/posts`
+
+Keystatic Cloud is already connected in [keystatic.config.ts](./keystatic.config.ts) with project key:
+
+`solid-digital/exemigrantai-blog`
+
+## Commands
 
 ```sh
-npm create astro@latest -- --template blog
+npm install
+npm run dev
+npm run build
+npm run import:wordpress
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Cloudflare Pages
 
-Features:
+This repo is currently safe to deploy through your existing Cloudflare Pages dashboard setup.
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and OpenGraph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+Important:
 
-## 🚀 Project Structure
+- Do not hand-write a production `wrangler.jsonc` for this existing Pages project unless you want the file to become the new source of truth.
+- Cloudflare’s current Pages docs recommend downloading the existing dashboard config first:
 
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-├── public/
-├── src/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+```sh
+npx wrangler pages download config emigrantai-blog
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+- Review that generated file before committing it.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+### Session binding
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+The Astro Cloudflare adapter in this repo may expect a KV binding named `SESSION` for session storage.
 
-Any static assets, like images, can be placed in the `public/` directory.
+If your deployed site ever reports a missing `SESSION` binding, add a KV namespace binding in Cloudflare Pages or in a downloaded `wrangler.jsonc`:
 
-## 🧞 Commands
+```json
+{
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "<your-kv-namespace-id>"
+    }
+  ]
+}
+```
 
-All commands are run from the root of the project, from a terminal:
+## Safe config template
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+A non-active template is included at [wrangler.pages.example.jsonc](./wrangler.pages.example.jsonc).
 
-## 👀 Want to learn more?
+It is intentionally not named `wrangler.jsonc`, so it does not take over your existing Pages configuration by accident.
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Migration notes
 
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+- WordPress runtime fetching has been removed.
+- 12 posts were imported from `exemigrantailt.WordPress.2026-03-27.xml`.
+- Featured images were downloaded into local repo assets.
+- The import script excludes trashed placeholder posts.

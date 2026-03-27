@@ -2,14 +2,15 @@
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import PostCard from '../components/PostCard.astro';
 import ScrollToTop from '../components/ScrollToTop.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { getPosts, getACFOptions, toEasyIOUrl, POSTS_PER_PAGE } from '../lib/wordpress';
+import { getPaginatedPosts, getSiteSettings, POSTS_PER_PAGE } from '../lib/content';
 import '../styles/global.css';
 
-const { posts, totalPages, totalPosts } = await getPosts(1, POSTS_PER_PAGE);
-const acfOptions = await getACFOptions();
-const homepageTitle = acfOptions.homepage_title || 'Naujausi įrašai';
+const { posts, totalPages } = await getPaginatedPosts(1, POSTS_PER_PAGE);
+const settings = await getSiteSettings();
+const homepageTitle = settings.homepageTitle || 'Naujausi įrašai';
 const currentPage = 1;
 ---
 
@@ -24,81 +25,15 @@ const currentPage = 1;
 			<h1 class="text-3xl font-bold text-center mb-12 text-gray-900">{homepageTitle}</h1>
 			
 			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-				{posts.map((post, index) => {
-					// Use medium_large size (max 768px) for better performance
-					const featuredImageRaw = post._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.medium_large?.source_url || post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
-					const featuredImage = toEasyIOUrl(featuredImageRaw);
-					const categories = post._embedded?.['wp:term']?.[0]?.map(cat => cat.name) || [];
-					// First image is LCP - prioritize it
-					const isFirstImage = index === 0;
-					
-					return (
-						<article class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200">
-						{featuredImage && (
-							<a href={`/blog/${post.slug}`}>
-								<img 
-									src={featuredImage} 
-									alt={post.title.rendered}
-									class="w-full h-48 object-cover"
-									loading={isFirstImage ? "eager" : "lazy"}
-									fetchpriority={isFirstImage ? "high" : "auto"}
-									width="768"
-									height="384"
-								/>
-								</a>
-							)}
-							
-							<div class="p-6">
-								{categories.length > 0 && (
-									<div class="flex gap-2 mb-3 flex-wrap">
-										{categories.map(cat => (
-											<span class="text-xs font-medium bg-blue-50 text-blue-700 px-2.5 py-1 rounded uppercase tracking-wide">
-												{cat}
-											</span>
-										))}
-									</div>
-								)}
-								
-								<h2 class="text-lg font-semibold mb-2 leading-tight">
-									<a href={`/blog/${post.slug}`} class="text-gray-900 hover:text-blue-600 transition-colors">
-										{post.title.rendered}
-									</a>
-								</h2>
-								
-								<time class="text-sm text-gray-500 mb-4 block font-medium">
-									{new Date(post.date).toLocaleDateString('lt-LT', { 
-										year: 'numeric', 
-										month: 'long', 
-										day: 'numeric' 
-									})}
-								</time>
-								
-								<div class="text-gray-600 mb-6 line-clamp-3 text-base leading-relaxed" set:html={post.excerpt.rendered} />
-								
-								<a 
-									href={`/blog/${post.slug}`}
-									class="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors group"
-								>
-									Skaityti daugiau
-									<svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-									</svg>
-								</a>
-							</div>
-						</article>
-					);
-				})}
+				{posts.map((post, index) => <PostCard post={post} eager={index === 0} />)}
 			</div>
 
-			{/* Pagination */}
 			{totalPages > 1 && (
 				<nav class="flex justify-center items-center gap-2 mt-12" aria-label="Puslapių navigacija">
-					{/* Previous button - disabled on first page */}
 					<span class="px-4 py-2 text-gray-400 cursor-not-allowed">
 						← Ankstesnis
 					</span>
 
-					{/* Page numbers */}
 					{Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
 						<a
 							href={page === 1 ? '/' : `/page/${page}`}
@@ -113,12 +48,9 @@ const currentPage = 1;
 						</a>
 					))}
 
-					{/* Next button */}
-					{totalPages > 1 && (
-						<a href="/page/2" class="px-4 py-2 text-blue-600 hover:text-blue-700 font-medium transition-colors">
-							Kitas →
-						</a>
-					)}
+					<a href="/page/2" class="px-4 py-2 text-blue-600 hover:text-blue-700 font-medium transition-colors">
+						Kitas →
+					</a>
 				</nav>
 			)}
 		</main>

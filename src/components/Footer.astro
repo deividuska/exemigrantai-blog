@@ -1,11 +1,14 @@
 ---
+import { getSiteSettings } from '../lib/content';
+
 const today = new Date();
+const settings = await getSiteSettings();
 ---
 
 <footer>
-	&copy; {today.getFullYear()} Eks Emigrantai. All rights reserved.
+	&copy; {today.getFullYear()} {settings.footerText}
 	<div class="social-links">
-		<a href="https://www.facebook.com/groups/372993659852080" target="_blank" rel="noopener noreferrer">
+		<a href={settings.facebookGroupUrl} target="_blank" rel="noopener noreferrer">
 			<span class="sr-only">Facebook grupė</span>
 			<svg viewBox="0 0 24 24" aria-hidden="true" width="32" height="32"
 				><path
