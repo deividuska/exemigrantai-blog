@@ -1,6 +1,6 @@
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 
-export const POSTS_PER_PAGE = 9;
+export const POSTS_PER_PAGE = 10;
 
 export const defaultSettings = {
   homepageTitle: 'Naujausi įrašai',
