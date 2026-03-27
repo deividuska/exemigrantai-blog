@@ -1,5 +1,6 @@
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 
+// This controls how many posts appear on the homepage and each archive page.
 export const POSTS_PER_PAGE = 10;
 
 export const defaultSettings = {
@@ -11,6 +12,7 @@ export const defaultSettings = {
 
 export type PostEntry = CollectionEntry<'posts'>;
 
+// Keystatic can save dates as either strings or Date objects, so we normalize both here.
 export function parsePublishedAt(value: string | Date) {
   if (value instanceof Date) {
     return value;
@@ -27,6 +29,7 @@ export function parsePublishedAt(value: string | Date) {
   return date;
 }
 
+// Reading time is calculated automatically from the raw post body.
 export function estimateReadingTime(content: string) {
   const plainText = content
     .replace(/!\[[^\]]*]\([^)]*\)/g, ' ')
@@ -68,6 +71,7 @@ function truncateExcerpt(content: string, maxLength = 180) {
   return `${(lastSpace > 100 ? truncated.slice(0, lastSpace) : content.slice(0, maxLength)).trim()}...`;
 }
 
+// Cards, RSS, and SEO fallbacks all use this generated excerpt.
 export function getPostExcerpt(post: PostEntry) {
   return truncateExcerpt(stripMarkdown(post.body));
 }
@@ -89,6 +93,7 @@ export async function getPost(slug: string) {
   return getEntry('posts', slug);
 }
 
+// The homepage uses page 1, and /page/2, /page/3, etc. use the same helper.
 export async function getPaginatedPosts(page: number, perPage = POSTS_PER_PAGE) {
   const allPosts = await getAllPosts();
   const totalPosts = allPosts.length;

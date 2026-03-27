@@ -14,12 +14,16 @@ import {
   getSiteSettings,
 } from '../lib/content';
 
+// Page 1 is the homepage. The rest of the pages use the same helper in /page/[page].
 const { posts, totalPages } = await getPaginatedPosts(1);
 const settings = await getSiteSettings();
 const homepageTitle = settings.homepageTitle || 'Naujausi įrašai';
 const currentPage = 1;
+
+// We treat the first post as the featured story and render the rest in the grid below.
 const [featuredPost, ...remainingPosts] = posts;
 const featuredExcerpt = featuredPost ? getPostExcerpt(featuredPost) : '';
+
 const structuredData = [
   {
     '@context': 'https://schema.org',
