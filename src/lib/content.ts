@@ -11,10 +11,23 @@ export const defaultSettings = {
 
 export type PostEntry = CollectionEntry<'posts'>;
 
+export function parsePublishedAt(value: string) {
+  const normalizedValue =
+    /(?:Z|[+-]\d{2}:\d{2})$/.test(value) ? value : `${value}Z`;
+  const date = new Date(normalizedValue);
+
+  if (Number.isNaN(date.getTime())) {
+    throw new RangeError(`Invalid publishedAt value: ${value}`);
+  }
+
+  return date;
+}
+
 function sortPosts(posts: PostEntry[]) {
   return posts.sort(
     (left, right) =>
-      new Date(right.data.publishedAt).getTime() - new Date(left.data.publishedAt).getTime()
+      parsePublishedAt(right.data.publishedAt).getTime() -
+      parsePublishedAt(left.data.publishedAt).getTime()
   );
 }
 
@@ -47,7 +60,7 @@ export async function getSiteSettings() {
 }
 
 export function formatLithuanianDate(value: string) {
-  return new Date(value).toLocaleDateString('lt-LT', {
+  return parsePublishedAt(value).toLocaleDateString('lt-LT', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',

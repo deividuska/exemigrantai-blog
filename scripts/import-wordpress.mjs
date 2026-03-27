@@ -118,6 +118,16 @@ function yamlScalar(value) {
   return JSON.stringify(value ?? '');
 }
 
+function formatKeystaticDateTime(value) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    throw new Error(`Invalid WordPress publication date: ${value}`);
+  }
+
+  return date.toISOString().slice(0, 16);
+}
+
 function buildFrontmatter(post) {
   const lines = [
     '---',
@@ -197,7 +207,7 @@ async function main() {
       return {
         slug,
         title: extractTag(item, 'title'),
-        publishedAt: new Date(extractTag(item, 'pubDate')).toISOString(),
+        publishedAt: formatKeystaticDateTime(extractTag(item, 'pubDate')),
         excerpt,
         category,
         readingTime,
