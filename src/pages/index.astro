@@ -4,7 +4,8 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import PostCard from '../components/PostCard.astro';
 import ScrollToTop from '../components/ScrollToTop.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import StructuredData from '../components/StructuredData.astro';
+import { SITE_ALT_NAME, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '../consts';
 import { getPaginatedPosts, getSiteSettings, POSTS_PER_PAGE } from '../lib/content';
 import '../styles/global.css';
 
@@ -12,12 +13,29 @@ const { posts, totalPages } = await getPaginatedPosts(1, POSTS_PER_PAGE);
 const settings = await getSiteSettings();
 const homepageTitle = settings.homepageTitle || 'Naujausi įrašai';
 const currentPage = 1;
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_TITLE,
+    alternateName: SITE_ALT_NAME,
+    url: `${SITE_URL}/`,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: SITE_TITLE,
+    url: `${SITE_URL}/`,
+    sameAs: settings.facebookGroupUrl ? [settings.facebookGroupUrl] : undefined,
+  },
+];
 ---
 
 <!doctype html>
 <html lang="lt">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<StructuredData data={structuredData} />
 	</head>
 	<body>
 		<Header />

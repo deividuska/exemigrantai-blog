@@ -8,6 +8,7 @@ interface Props {
 	title: string;
 	description: string;
 	image?: string;
+	ogType?: string;
 	ogTitle?: string;
 	ogDescription?: string;
 	twitterTitle?: string;
@@ -18,7 +19,16 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 // Default OG image - you can replace this with your own
 const defaultImage = '/favicon.svg';
-const { title, description, image = defaultImage, ogTitle, ogDescription, twitterTitle, twitterDescription } = Astro.props;
+const {
+	title,
+	description,
+	image = defaultImage,
+	ogType = 'website',
+	ogTitle,
+	ogDescription,
+	twitterTitle,
+	twitterDescription,
+} = Astro.props;
 const ogImage = image.startsWith('http') ? image : new URL(image, Astro.site).toString();
 
 // Use specific social titles/descriptions or fall back to main ones
@@ -56,8 +66,9 @@ const finalTwitterDescription = twitterDescription || finalOgDescription;
 <meta name="description" content={description} />
 
 <!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
+<meta property="og:type" content={ogType} />
 <meta property="og:url" content={Astro.url} />
+<meta property="og:site_name" content={SITE_TITLE} />
 <meta property="og:title" content={finalOgTitle} />
 <meta property="og:description" content={finalOgDescription} />
 <meta property="og:image" content={ogImage} />
