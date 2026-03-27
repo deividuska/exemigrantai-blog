@@ -7,6 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "import:wordpress": "node scripts/import-wordpress.mjs",
+    "normalize:posts": "node scripts/normalize-post-frontmatter.mjs",
     "astro": "astro"
   },
   "dependencies": {

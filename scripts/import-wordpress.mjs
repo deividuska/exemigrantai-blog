@@ -128,6 +128,40 @@ function formatKeystaticDateTime(value) {
   return date.toISOString().slice(0, 16);
 }
 
+function normaliseSeoTitle(value, title) {
+  const seoTitle = (value || '').trim();
+  return seoTitle && seoTitle !== '1' ? seoTitle : title;
+}
+
+function truncateText(value, maxLength = 160) {
+  const text = value.replace(/\s+/g, ' ').trim();
+
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  const truncated = text.slice(0, maxLength + 1);
+  const lastSpace = truncated.lastIndexOf(' ');
+  return `${(lastSpace > 80 ? truncated.slice(0, lastSpace) : text.slice(0, maxLength)).trim()}...`;
+}
+
+function normaliseSeoDescription(value, excerpt, title) {
+  const seoDescription = (value || '').trim();
+  const titleYear = title.match(/\b(20\d{2})\b/)?.[1];
+  const descriptionYear = seoDescription.match(/\b(20\d{2})\b/)?.[1];
+
+  if (
+    seoDescription &&
+    seoDescription !== '1' &&
+    seoDescription !== title &&
+    (!titleYear || !descriptionYear || titleYear === descriptionYear)
+  ) {
+    return seoDescription;
+  }
+
+  return truncateText(excerpt || title);
+}
+
 function buildFrontmatter(post) {
   const lines = [
     '---',
@@ -135,7 +169,6 @@ function buildFrontmatter(post) {
     `publishedAt: ${yamlScalar(post.publishedAt)}`,
     `excerpt: ${yamlScalar(post.excerpt)}`,
     `category: ${yamlScalar(post.category || 'Naujienos')}`,
-    `readingTime: ${post.readingTime}`,
   ];
 
   if (post.featuredImage) {
@@ -146,13 +179,8 @@ function buildFrontmatter(post) {
     lines.push(`featuredImageAlt: ${yamlScalar(post.featuredImageAlt)}`);
   }
 
-  if (post.seoTitle) {
-    lines.push(`seoTitle: ${yamlScalar(post.seoTitle)}`);
-  }
-
-  if (post.seoDescription) {
-    lines.push(`seoDescription: ${yamlScalar(post.seoDescription)}`);
-  }
+  lines.push(`seoTitle: ${yamlScalar(post.seoTitle)}`);
+  lines.push(`seoDescription: ${yamlScalar(post.seoDescription)}`);
 
   lines.push('---', '');
   return lines.join('\n');
@@ -197,22 +225,22 @@ async function main() {
 
       const content = extractTag(item, 'content:encoded');
       const markdown = convertHtmlToMarkdown(content);
-      const wordCount = stripTags(content).split(/\s+/).filter(Boolean).length;
-      const readingTime = Math.max(1, Math.ceil(wordCount / 200));
       const slug = extractTag(item, 'wp:post_name');
       const excerptSource = extractTag(item, 'excerpt:encoded') || stripTags(content);
       const excerpt = stripTags(excerptSource).slice(0, 240).trim();
+      const title = extractTag(item, 'title');
+      const seoTitle = normaliseSeoTitle(meta.get('_tsf_title_no_blogname'), title);
+      const seoDescription = normaliseSeoDescription(meta.get('_genesis_description'), excerpt, title);
       const thumbnailUrl = attachmentMap.get(meta.get('_thumbnail_id'));
 
       return {
         slug,
-        title: extractTag(item, 'title'),
+        title,
         publishedAt: formatKeystaticDateTime(extractTag(item, 'pubDate')),
         excerpt,
         category,
-        readingTime,
-        seoTitle: meta.get('_tsf_title_no_blogname') || '',
-        seoDescription: meta.get('_genesis_description') || '',
+        seoTitle,
+        seoDescription,
         content: markdown,
         thumbnailUrl,
         isTrashed: slug.includes('__trashed') || meta.has('_wp_trash_meta_status'),

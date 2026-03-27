@@ -10,7 +10,6 @@ const posts = defineCollection({
       category: z.string().default('Naujienos'),
       featuredImage: image().optional(),
       featuredImageAlt: z.string().optional(),
-      readingTime: z.number().int().positive(),
       seoTitle: z.string().optional(),
       seoDescription: z.string().optional(),
     }),

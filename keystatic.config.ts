@@ -56,10 +56,6 @@ export default config({
         featuredImageAlt: fields.text({
           label: 'Featured image alt',
         }),
-        readingTime: fields.integer({
-          label: 'Reading time (minutes)',
-          validation: { isRequired: true, min: 1 },
-        }),
         seoTitle: fields.text({
           label: 'SEO title',
         }),

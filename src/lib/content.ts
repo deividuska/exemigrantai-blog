@@ -23,6 +23,20 @@ export function parsePublishedAt(value: string) {
   return date;
 }
 
+export function estimateReadingTime(content: string) {
+  const plainText = content
+    .replace(/!\[[^\]]*]\([^)]*\)/g, ' ')
+    .replace(/\[[^\]]*]\([^)]*\)/g, ' ')
+    .replace(/`{1,3}[^`]*`{1,3}/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/[#>*_\-\[\]\(\)\|]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const wordCount = plainText ? plainText.split(/\s+/).length : 0;
+  return Math.max(1, Math.ceil(wordCount / 200));
+}
+
 function sortPosts(posts: PostEntry[]) {
   return posts.sort(
     (left, right) =>

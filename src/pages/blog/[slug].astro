@@ -4,7 +4,7 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import ScrollToTop from '../../components/ScrollToTop.astro';
-import { formatLithuanianDate, getAllPosts } from '../../lib/content';
+import { estimateReadingTime, formatLithuanianDate, getAllPosts } from '../../lib/content';
 import '../../styles/global.css';
 
 export async function getStaticPaths() {
@@ -22,6 +22,7 @@ const { Content } = await post.render();
 const seoTitle = post.data.seoTitle || post.data.title;
 const seoDescription = post.data.seoDescription || post.data.excerpt;
 const socialImage = post.data.featuredImage?.src;
+const readingTime = estimateReadingTime(post.body);
 ---
 
 <!doctype html>
@@ -69,7 +70,7 @@ const socialImage = post.data.featuredImage?.src;
 							{formatLithuanianDate(post.data.publishedAt)}
 						</time>
 						<span>•</span>
-						<span>{post.data.readingTime} min skaitymo</span>
+						<span>{readingTime} min skaitymo</span>
 						<span>•</span>
 						<span><span id="view-count">—</span> peržiūrų</span>
 					</div>
