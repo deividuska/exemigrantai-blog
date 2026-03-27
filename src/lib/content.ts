@@ -11,7 +11,11 @@ export const defaultSettings = {
 
 export type PostEntry = CollectionEntry<'posts'>;
 
-export function parsePublishedAt(value: string) {
+export function parsePublishedAt(value: string | Date) {
+  if (value instanceof Date) {
+    return value;
+  }
+
   const normalizedValue =
     /(?:Z|[+-]\d{2}:\d{2})$/.test(value) ? value : `${value}Z`;
   const date = new Date(normalizedValue);
@@ -73,7 +77,7 @@ export async function getSiteSettings() {
   return settings?.data ?? defaultSettings;
 }
 
-export function formatLithuanianDate(value: string) {
+export function formatLithuanianDate(value: string | Date) {
   return parsePublishedAt(value).toLocaleDateString('lt-LT', {
     year: 'numeric',
     month: 'long',

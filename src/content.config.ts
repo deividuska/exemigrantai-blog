@@ -5,7 +5,11 @@ const posts = defineCollection({
   schema: ({ image }) =>
     z.object({
       title: z.string(),
-      publishedAt: z.string(),
+      publishedAt: z
+        .union([z.string(), z.date()])
+        .transform((value) =>
+          value instanceof Date ? value.toISOString().slice(0, 16) : value
+        ),
       excerpt: z.string(),
       category: z.string().default('Naujienos'),
       featuredImage: image().optional(),
