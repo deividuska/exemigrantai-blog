@@ -85,8 +85,9 @@ const structuredData = {
 						src={post.data.featuredImage}
 						alt={post.data.featuredImageAlt || post.data.title}
 						class="w-full h-96 object-cover"
+						quality={70}
 						widths={[720, 1024, 1440]}
-						sizes="(min-width: 1024px) 1024px, 100vw"
+						sizes="(min-width: 1280px) 1024px, calc(100vw - 2rem)"
 					/>
 				)}
 				
