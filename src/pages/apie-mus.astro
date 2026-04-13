@@ -1,0 +1,161 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import ScrollToTop from '../components/ScrollToTop.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="lt">
+  <head>
+    <BaseHead
+      title={`Apie mus - ${SITE_TITLE}`}
+      description="Trumpai apie Eks Emigrantai ir kam skirtas svetain&#279;s turinys."
+    />
+  </head>
+  <body>
+    <Header />
+    <main class="page-shell about-shell">
+      <section class="about-hero">
+        <div>
+          <span class="eyebrow">Apie mus</span>
+          <h1 class="section-title">Eks Emigrantai</h1>
+        </div>
+        <p class="section-subtitle">
+          Svetain&#279; skirta lietuviams tarp JK ir Lietuvos. Dalinam&#279;s ai&#353;kia,
+          prakti&#353;ka informacija apie dokumentus, i&#353;mokas, pensijas ir gr&#299;&#382;im&#261;
+          &#303; Lietuv&#261;.
+        </p>
+      </section>
+
+      <section class="content-panel about-panel">
+        <div class="about-prose">
+          <p class="about-label">K&#261; darome</p>
+          <h2>Ra&#353;ome papras&#269;iau apie sud&#279;tingus dalykus</h2>
+          <p>
+            M&#363;s&#371; tikslas yra pad&#279;ti grei&#269;iau suprasti, koki&#371;
+            dokument&#371; reikia, nuo ko prad&#279;ti tvarkyti formalumus ir &#303; k&#261;
+            atkreipti d&#279;mes&#303; planuojant gr&#299;&#382;im&#261;.
+          </p>
+          <p>
+            Turinys skirtas informaciniams tikslams ir paremtas vie&#353;ai prieinama informacija bei
+            praktiniais pavyzd&#382;iais.
+          </p>
+
+          <div class="surface-divider"></div>
+
+          <p class="about-label">Kam skirta</p>
+          <h2>Lietuviams tarp JK ir Lietuvos</h2>
+          <p>
+            Turiniu siekiame pad&#279;ti &#382;mon&#279;ms, kurie tvarko dokumentus, domisi
+            i&#353;mokomis, pensijomis ar ruo&#353;iasi gr&#299;&#382;ti &#303; Lietuv&#261;.
+          </p>
+
+          <div class="surface-divider"></div>
+
+          <p class="about-label">Kas skelbia</p>
+          <h2>Turin&#303; skelbia exemigrantai</h2>
+          <p>
+            Jei norite pasi&#363;lyti tem&#261;, pasidalinti patirtimi ar pasteb&#279;jote
+            netikslum&#261;, galite para&#353;yti per <a href="/kontaktai">kontakt&#371;
+            puslap&#303;</a>.
+          </p>
+          <p>
+            Eks Emigrantai n&#279;ra valstybin&#279; institucija ar oficiali konsultavimo tarnyba.
+            Turinys skirtas pad&#279;ti geriau orientuotis temoje ir pasiruo&#353;ti tolimesniems
+            veiksmams.
+          </p>
+
+          <a href="/kontaktai" class="pill-link pill-link-secondary">Susisiekti</a>
+        </div>
+      </section>
+    </main>
+    <Footer />
+    <ScrollToTop />
+  </body>
+</html>
+
+<style>
+  .about-shell {
+    padding-top: 2.4rem;
+    padding-bottom: 1rem;
+  }
+
+  .about-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 2rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .about-panel {
+    padding: 1.7rem;
+  }
+
+  .about-label {
+    margin: 0;
+    color: var(--accent-deep);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .about-prose h2 {
+    margin: 0.8rem 0 0.7rem;
+    font-family: var(--font-serif);
+    font-size: clamp(1.9rem, 3.1vw, 2.5rem);
+    line-height: 1.06;
+    letter-spacing: -0.04em;
+    color: var(--surface-ink);
+  }
+
+  .about-prose p {
+    color: var(--text-soft);
+    line-height: 1.8;
+  }
+
+  .about-prose {
+    max-width: 76ch;
+  }
+
+  .about-prose a {
+    width: fit-content;
+  }
+
+  .about-prose a {
+    color: var(--accent-deep);
+    font-weight: 700;
+    text-decoration-color: rgba(184, 100, 50, 0.35);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.18em;
+  }
+
+  .about-prose .pill-link {
+    margin-top: 0.3rem;
+    text-decoration: none;
+  }
+
+  .about-prose .surface-divider {
+    margin: 1.8rem 0;
+  }
+
+  @media (max-width: 960px) {
+    .about-hero {
+      align-items: start;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .about-shell {
+      padding-top: 1.6rem;
+    }
+
+    .about-panel {
+      padding: 1.2rem;
+    }
+  }
+</style>

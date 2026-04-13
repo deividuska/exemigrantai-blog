@@ -1,0 +1,161 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import ScrollToTop from '../components/ScrollToTop.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="lt">
+  <head>
+    <BaseHead
+      title={`Privatumo politika - ${SITE_TITLE}`}
+      description="Paprasta privatumo politika svetainei Eks Emigrantai."
+    />
+  </head>
+  <body>
+    <Header />
+    <main class="page-shell policy-shell">
+      <section class="policy-hero">
+        <div>
+          <span class="eyebrow">Privatumo politika</span>
+          <h1 class="section-title">Kaip tvarkome informacij&#261;</h1>
+        </div>
+        <p class="section-subtitle">
+          &#352;iame puslapyje trumpai paai&#353;kinama, kokia informacija gali b&#363;ti renkama
+          naudojantis svetaine <strong>exemigrantai.lt</strong> ir kaip ji naudojama.
+        </p>
+      </section>
+
+      <section class="policy-grid">
+        <div class="content-panel policy-card">
+          <div class="policy-prose prose">
+            <h2>Kokie duomenys gali b&#363;ti renkami</h2>
+            <p>
+              Nar&#353;ant svetain&#279;je gali b&#363;ti renkama technin&#279; informacija,
+              tokia kaip nar&#353;ykl&#279;s tipas, &#303;renginio tipas, aplankyti puslapiai ir
+              bendri naudojimo duomenys.
+            </p>
+
+            <h2>Kontakt&#371; forma</h2>
+            <p>
+              Jei susisiekiate per kontakt&#371; form&#261;, galime gauti J&#363;s&#371;
+              vard&#261;, el. pa&#353;to adres&#261; ir &#382;inut&#279;s turin&#303;, kad
+              gal&#279;tume atsakyti &#303; u&#382;klaus&#261;.
+            </p>
+
+            <h2>Slapukai ir tre&#269;i&#371;j&#371; &#353;ali&#371; paslaugos</h2>
+            <p>
+              Svetain&#279;je gali b&#363;ti naudojami slapukai arba pana&#353;ios technologijos,
+              padedan&#269;ios u&#382;tikrinti tinkam&#261; veikim&#261;, analizuoti sraut&#261;
+              ir rodyti aktual&#371; turin&#303; ar reklam&#261;.
+            </p>
+
+            <p>
+              Jei svetain&#279;je naudojama <strong>Google AdSense</strong> ar kita reklamos
+              sistema, tre&#269;iosios &#353;alys gali naudoti slapukus tam, kad rodyt&#371;
+              skelbimus pagal ankstesnius apsilankymus &#353;ioje ar kitose svetain&#279;se.
+            </p>
+
+            <h2>Nuorodos &#303; kitas svetaines</h2>
+            <p>
+              Straipsniuose gali b&#363;ti nuorod&#371; &#303; i&#353;orines svetaines. Mes
+              neatsakome u&#382; t&#371; svetaini&#371; turin&#303; ar privatumo praktik&#261;.
+            </p>
+          </div>
+        </div>
+
+        <aside class="content-panel policy-aside">
+          <p class="policy-label">Svarbu</p>
+          <h2>Trumpai ir ai&#353;kiai</h2>
+          <p>
+            Jei turite klausim&#371; d&#279;l privatumo ar pateikt&#371; duomen&#371;, galite
+            susisiekti per kontakt&#371; puslap&#303;.
+          </p>
+          <a href="/kontaktai" class="pill-link pill-link-secondary">Kontaktai</a>
+        </aside>
+      </section>
+    </main>
+    <Footer />
+    <ScrollToTop />
+  </body>
+</html>
+
+<style>
+  .policy-shell {
+    padding-top: 2.4rem;
+    padding-bottom: 1rem;
+  }
+
+  .policy-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 2rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .policy-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.85fr);
+    gap: 1.4rem;
+    align-items: start;
+  }
+
+  .policy-card,
+  .policy-aside {
+    padding: 1.6rem;
+  }
+
+  .policy-label {
+    margin: 0;
+    color: var(--accent-deep);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .policy-aside h2 {
+    margin: 0.8rem 0 0.7rem;
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    line-height: 1.06;
+    letter-spacing: -0.04em;
+    color: var(--surface-ink);
+  }
+
+  .policy-aside p {
+    margin: 0 0 1.2rem;
+    color: var(--text-soft);
+    line-height: 1.8;
+  }
+
+  .policy-prose {
+    max-width: 76ch;
+  }
+
+  @media (max-width: 960px) {
+    .policy-hero,
+    .policy-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .policy-hero {
+      align-items: start;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .policy-shell {
+      padding-top: 1.6rem;
+    }
+
+    .policy-card,
+    .policy-aside {
+      padding: 1.2rem;
+    }
+  }
+</style>

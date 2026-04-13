@@ -10,6 +10,10 @@ const settings = await getSiteSettings();
     <div>
       <p class="footer-label">Eks Emigrantai</p>
       <p class="footer-copy">&copy; {today.getFullYear()} {settings.footerText}</p>
+      <div class="footer-links">
+        <a href="/apie-mus" class="footer-text-link">Apie mus</a>
+        <a href="/privatumo-politika" class="footer-text-link">Privatumo politika</a>
+      </div>
     </div>
 
     <div class="footer-actions">
@@ -51,6 +55,24 @@ const settings = await getSiteSettings();
   .footer-copy {
     margin-top: 0.35rem;
     font-size: 0.94rem;
+  }
+
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 0.85rem;
+  }
+
+  .footer-text-link {
+    color: var(--accent-deep);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .footer-text-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
   }
 
   .footer-link {
