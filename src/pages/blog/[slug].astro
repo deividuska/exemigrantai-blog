@@ -92,7 +92,7 @@ const structuredData = {
             <time>{formatLithuanianDate(post.data.publishedAt)}</time>
             <span>•</span>
             <span>{readingTime} min skaitymo</span>
-            <span id="view-counter" hidden>
+            <span id="view-counter">
               <span>•</span>
               <span><span id="view-count">—</span> peržiūrų</span>
             </span>
@@ -134,12 +134,12 @@ const structuredData = {
               }
 
               if (viewCounter) {
-                viewCounter.hidden = false;
+                viewCounter.removeAttribute('aria-busy');
               }
             })
             .catch(() => {
               if (viewCounter) {
-                viewCounter.hidden = true;
+                viewCounter.removeAttribute('aria-busy');
               }
             });
         </script>
