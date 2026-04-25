@@ -92,8 +92,10 @@ const structuredData = {
             <time>{formatLithuanianDate(post.data.publishedAt)}</time>
             <span>•</span>
             <span>{readingTime} min skaitymo</span>
-            <span>•</span>
-            <span><span id="view-count">—</span> peržiūrų</span>
+            <span id="view-counter" hidden>
+              <span>•</span>
+              <span><span id="view-count">—</span> peržiūrų</span>
+            </span>
           </div>
         </div>
 
@@ -113,13 +115,32 @@ const structuredData = {
 
       <article class="article-panel content-panel">
         <script define:vars={{ slug }}>
-          fetch(`https://api.counterapi.dev/v1/exemigrantai/${slug}/up`)
-            .then((r) => r.json())
+          const viewCounter = document.getElementById('view-counter');
+          const viewCount = document.getElementById('view-count');
+
+          fetch(`/api/views/${encodeURIComponent(slug)}.json`, {
+            method: 'POST',
+            headers: { accept: 'application/json' },
+          })
+            .then((r) => {
+              if (!r.ok) throw new Error('View counter request failed');
+              return r.json();
+            })
             .then((data) => {
-              document.getElementById('view-count').textContent = data.count;
+              if (!data.enabled || !Number.isFinite(data.count)) return;
+
+              if (viewCount) {
+                viewCount.textContent = new Intl.NumberFormat('lt-LT').format(data.count);
+              }
+
+              if (viewCounter) {
+                viewCounter.hidden = false;
+              }
             })
             .catch(() => {
-              document.getElementById('view-count').textContent = '0';
+              if (viewCounter) {
+                viewCounter.hidden = true;
+              }
             });
         </script>
 

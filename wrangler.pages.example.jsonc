@@ -15,6 +15,10 @@
 
   "kv_namespaces": [
     {
+      "binding": "VIEW_COUNTS",
+      "id": "<your-view-counts-kv-namespace-id>"
+    },
+    {
       "binding": "SESSION",
       "id": "<your-kv-namespace-id>"
     }
