@@ -8,3 +8,16 @@ navigation:
     href: /kontaktai
 facebookGroupUrl: https://www.facebook.com/groups/372993659852080
 footerText: Eks Emigrantai. All rights reserved.
+affiliateAd:
+  enabled: true
+  label: Partnerio nuoroda
+  title: Revolut – sąskaita kelionėms tarp JK ir Lietuvos
+  description: "Pervedimai tarp svarų ir eurų be valiutos keitimo mokesčių, kortelė veikia abiejose šalyse, o pinigus galima išsiimti bet kuriame bankomate. Patogu, jei dažnai judate tarp JK ir Lietuvos."
+  cta: Atidaryti Revolut sąskaitą
+  url: "https://revolut.com/referral/?referral-code=deividzbg!MAY1-26-VR-GB&geo-redirect"
+  image: ""
+  imageAlt: Revolut partnerio pasiūlymas
+  placements:
+    top: true
+    middle: true
+    bottom: true

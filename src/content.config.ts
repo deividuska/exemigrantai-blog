@@ -32,6 +32,26 @@ const settings = defineCollection({
       .default([]),
     facebookGroupUrl: z.string().url(),
     footerText: z.string(),
+    affiliateAd: z
+      .object({
+        enabled: z.boolean().default(false),
+        label: z.string().default('Partnerio nuoroda'),
+        title: z.string(),
+        description: z.string(),
+        cta: z.string().default('Sužinoti daugiau'),
+        url: z.string().url(),
+        disclosure: z.string().optional(),
+        image: z.string().optional(),
+        imageAlt: z.string().optional(),
+        placements: z
+          .object({
+            top: z.boolean().default(true),
+            middle: z.boolean().default(true),
+            bottom: z.boolean().default(true),
+          })
+          .default({}),
+      })
+      .optional(),
   }),
 });
 

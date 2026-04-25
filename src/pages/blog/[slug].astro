@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import AffiliateBanner from '../../components/AffiliateBanner.astro';
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
@@ -10,6 +11,7 @@ import {
   formatLithuanianDate,
   getAllPosts,
   getPostExcerpt,
+  getSiteSettings,
   parsePublishedAt,
 } from '../../lib/content';
 import { SITE_TITLE, SITE_URL } from '../../consts';
@@ -26,6 +28,8 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { slug } = Astro.params;
 const { Content } = await post.render();
+const settings = await getSiteSettings();
+const affiliateAd = settings.affiliateAd;
 const excerpt = getPostExcerpt(post);
 const seoTitle = post.data.seoTitle || post.data.title;
 const seoDescription = post.data.seoDescription || excerpt;
@@ -144,9 +148,49 @@ const structuredData = {
             });
         </script>
 
+        <AffiliateBanner ad={affiliateAd} placement="top" />
+
         <div class="article-prose prose">
           <Content />
         </div>
+
+        <div data-middle-affiliate-slot>
+          <AffiliateBanner ad={affiliateAd} placement="middle" compact />
+        </div>
+
+        <AffiliateBanner ad={affiliateAd} placement="bottom" />
+
+        <script is:inline>
+          function placeMiddleAffiliateSlot() {
+            const prose = document.querySelector('.article-prose');
+            const middleAffiliateSlot = document.querySelector('[data-middle-affiliate-slot]');
+
+            if (!prose || !middleAffiliateSlot?.children.length) return;
+
+            // Astro Markdoc wraps rendered content in an <article> element, so the real
+            // block-level children live one level deeper than .article-prose.
+            const proseRoot = prose.querySelector('article') || prose;
+
+            const blocks = Array.from(proseRoot.children).filter((element) =>
+              ['P', 'H2', 'H3', 'UL', 'OL', 'TABLE'].includes(element.tagName)
+            );
+
+            if (!blocks.length) return;
+
+            const targetIndex = Math.min(Math.max(4, Math.floor(blocks.length * 0.45)), blocks.length - 1);
+            const target = blocks[targetIndex];
+
+            if (target) {
+              target.after(middleAffiliateSlot);
+            }
+          }
+
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', placeMiddleAffiliateSlot);
+          } else {
+            placeMiddleAffiliateSlot();
+          }
+        </script>
       </article>
     </main>
     <Footer />

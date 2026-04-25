@@ -8,6 +8,7 @@ export const defaultSettings = {
   navigation: [{ label: 'Kontaktai', href: '/kontaktai' }],
   facebookGroupUrl: 'https://www.facebook.com/groups/372993659852080',
   footerText: 'Eks Emigrantai. All rights reserved.',
+  affiliateAd: undefined,
 };
 
 export type PostEntry = CollectionEntry<'posts'>;
