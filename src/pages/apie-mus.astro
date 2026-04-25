@@ -11,7 +11,7 @@ import { SITE_TITLE } from '../consts';
   <head>
     <BaseHead
       title={`Apie mus - ${SITE_TITLE}`}
-      description="Trumpai apie Eks Emigrantai ir kam skirtas svetain&#279;s turinys."
+      description="Apie Eks Emigrantai: kam skirta svetainė, kaip rengiame praktinį turinį lietuviams tarp JK ir Lietuvos, kokiais šaltiniais remiamės ir kaip taisome klaidas."
     />
   </head>
   <body>
@@ -23,24 +23,25 @@ import { SITE_TITLE } from '../consts';
           <h1 class="section-title">Eks Emigrantai</h1>
         </div>
         <p class="section-subtitle">
-          Svetain&#279; skirta lietuviams tarp JK ir Lietuvos. Dalinam&#279;s ai&#353;kia,
-          prakti&#353;ka informacija apie dokumentus, i&#353;mokas, pensijas ir gr&#299;&#382;im&#261;
-          &#303; Lietuv&#261;.
+          Eks Emigrantai yra praktinės informacijos svetainė lietuviams, kurie gyvena,
+          dirbo ar planuoja grįžti iš Jungtinės Karalystės į Lietuvą. Rašome apie dokumentus,
+          mokesčius, išmokas, pensijas, keliones, muitinę ir kasdienius administracinius žingsnius.
         </p>
       </section>
 
       <section class="content-panel about-panel">
         <div class="about-prose">
           <p class="about-label">K&#261; darome</p>
-          <h2>Ra&#353;ome papras&#269;iau apie sud&#279;tingus dalykus</h2>
+          <h2>Padedame greičiau suprasti, nuo ko pradėti</h2>
           <p>
-            M&#363;s&#371; tikslas yra pad&#279;ti grei&#269;iau suprasti, koki&#371;
-            dokument&#371; reikia, nuo ko prad&#279;ti tvarkyti formalumus ir &#303; k&#261;
-            atkreipti d&#279;mes&#303; planuojant gr&#299;&#382;im&#261;.
+            Mūsų tikslas yra paprastai paaiškinti sudėtingas temas, su kuriomis susiduria
+            lietuviai tarp JK ir Lietuvos: kaip susitvarkyti dokumentus, kur kreiptis, kokių
+            įrodymų gali reikėti ir kokių klaidų verta išvengti.
           </p>
           <p>
-            Turinys skirtas informaciniams tikslams ir paremtas vie&#353;ai prieinama informacija bei
-            praktiniais pavyzd&#382;iais.
+            Daugiausia dėmesio skiriame praktiniams klausimams: HMRC, GOV.UK, EU Settlement
+            Scheme, eVisa, P45, P60, U1, Sodra, Užimtumo tarnyba, Lietuvos muitinė, bankai ir
+            kitos institucijos, su kuriomis žmonės realiai susiduria grįždami ar keliaudami.
           </p>
 
           <div class="surface-divider"></div>
@@ -48,26 +49,36 @@ import { SITE_TITLE } from '../consts';
           <p class="about-label">Kam skirta</p>
           <h2>Lietuviams tarp JK ir Lietuvos</h2>
           <p>
-            Turiniu siekiame pad&#279;ti &#382;mon&#279;ms, kurie tvarko dokumentus, domisi
-            i&#353;mokomis, pensijomis ar ruo&#353;iasi gr&#299;&#382;ti &#303; Lietuv&#261;.
+            Svetainė skirta žmonėms, kurie išvyko į JK, grįžo į Lietuvą, važinėja tarp
+            šalių arba tvarko šeimos, darbo, mokesčių ar socialinių teisių klausimus po
+            gyvenimo užsienyje.
+          </p>
+          <p>
+            Stengiamės rašyti taip, kad tekstas būtų naudingas ne specialistui, o žmogui,
+            kuris vakare atsisėdo su dokumentais ir nori suprasti, ką daryti toliau.
           </p>
 
           <div class="surface-divider"></div>
 
-          <p class="about-label">Kas skelbia</p>
-          <h2>Turin&#303; skelbia exemigrantai</h2>
+          <p class="about-label">Kaip rengiame turinį</p>
+          <h2>Remiamės oficialiais šaltiniais ir aiškiai žymime ribas</h2>
           <p>
-            Jei norite pasi&#363;lyti tem&#261;, pasidalinti patirtimi ar pasteb&#279;jote
-            netikslum&#261;, galite para&#353;yti per <a href="/kontaktai">kontakt&#371;
-            puslap&#303;</a>.
+            Straipsniuose, kuriuose kalbama apie mokesčius, išmokas, imigracijos statusą,
+            muitinę ar kitas taisykles, nurodome oficialius šaltinius ir datą, kada informacija
+            buvo tikrinta. Jei tema priklauso nuo individualios situacijos, tai aiškiai pažymime.
           </p>
           <p>
-            Eks Emigrantai n&#279;ra valstybin&#279; institucija ar oficiali konsultavimo tarnyba.
-            Turinys skirtas pad&#279;ti geriau orientuotis temoje ir pasiruo&#353;ti tolimesniems
-            veiksmams.
+            Eks Emigrantai nėra valstybinė institucija, advokatų kontora, mokesčių konsultantas
+            ar oficiali konsultavimo tarnyba. Turinys skirtas padėti geriau orientuotis temoje,
+            pasiruošti klausimams ir rasti teisingą oficialų kelią.
           </p>
 
-          <a href="/kontaktai" class="pill-link pill-link-secondary">Susisiekti</a>
+          <div class="about-actions">
+            <a href="/redakcine-politika" class="pill-link pill-link-secondary">
+              Redakcinė politika
+            </a>
+            <a href="/kontaktai" class="pill-link pill-link-secondary">Susisiekti</a>
+          </div>
         </div>
       </section>
     </main>
@@ -136,6 +147,13 @@ import { SITE_TITLE } from '../consts';
   .about-prose .pill-link {
     margin-top: 0.3rem;
     text-decoration: none;
+  }
+
+  .about-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
   }
 
   .about-prose .surface-divider {

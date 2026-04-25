@@ -1,5 +1,9 @@
 homepageTitle: Naujausi įrašai
 navigation:
+  - label: Apie mus
+    href: /apie-mus
+  - label: Redakcinė politika
+    href: /redakcine-politika
   - label: Kontaktai
     href: /kontaktai
 facebookGroupUrl: https://www.facebook.com/groups/372993659852080

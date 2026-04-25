@@ -1,0 +1,203 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import ScrollToTop from '../components/ScrollToTop.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="lt">
+  <head>
+    <BaseHead
+      title={`Redakcinė politika ir šaltiniai - ${SITE_TITLE}`}
+      description="Eks Emigrantai redakcinė politika: kaip tikriname šaltinius, kaip taisome klaidas, kokios yra turinio ribos ir kaip su mumis susisiekti."
+    />
+  </head>
+  <body>
+    <Header />
+    <main class="page-shell policy-shell">
+      <section class="policy-hero">
+        <div>
+          <span class="eyebrow">Redakcinė politika</span>
+          <h1 class="section-title">Kaip rengiame ir tikriname informaciją</h1>
+        </div>
+        <p class="section-subtitle">
+          Eks Emigrantai skelbia praktinį informacinį turinį lietuviams tarp JK ir Lietuvos.
+          Mūsų tikslas yra paaiškinti taisykles suprantamai ir nukreipti skaitytoją į oficialius
+          veiksmus, kai situacija priklauso nuo individualių aplinkybių.
+        </p>
+      </section>
+
+      <section class="content-panel policy-panel">
+        <div class="policy-prose">
+          <p class="policy-label">Šaltiniai</p>
+          <h2>Remiamės oficialiais ir patikrinamais šaltiniais</h2>
+          <p>
+            Straipsniuose apie mokesčius, išmokas, imigracijos statusą, muitinę, dokumentus,
+            pensijas ir socialines teises pirmiausia remiamės oficialiais šaltiniais.
+          </p>
+          <p>Dažniausiai naudojami šaltiniai:</p>
+          <ul>
+            <li>GOV.UK ir HMRC informacija apie JK taisykles, mokesčius ir formas</li>
+            <li>Home Office ir UKVI informacija apie eVisa, EUSS, ETA ir keliones</li>
+            <li>„Sodra“, Užimtumo tarnyba ir kitos Lietuvos institucijos</li>
+            <li>Lietuvos muitinė, Valstybinė mokesčių inspekcija ir kiti oficialūs puslapiai</li>
+            <li>viešai prieinami institucijų paaiškinimai, kai jie papildo oficialų reglamentavimą</li>
+          </ul>
+
+          <div class="surface-divider"></div>
+
+          <p class="policy-label">Tikrinimas</p>
+          <h2>Stengiamės aiškiai atskirti faktą nuo praktinio paaiškinimo</h2>
+          <p>
+            Kuriant ar atnaujinant straipsnį, tikriname, ar oficialūs puslapiai vis dar galioja,
+            ar nepasikeitė datos, formos, terminai ir institucijų reikalavimai. Prie jautresnių
+            temų nurodome datą, kada informacija buvo patikrinta.
+          </p>
+          <p>
+            Kai taisyklė priklauso nuo žmogaus asmeninės situacijos, rašome atsargiai:
+            „gali būti“, „dažniausiai“, „tikrinkite pagal savo situaciją“. Vengiame žadėti
+            rezultatą, kurio negali garantuoti informacinis straipsnis.
+          </p>
+
+          <div class="surface-divider"></div>
+
+          <p class="policy-label">Ribos</p>
+          <h2>Turinys nėra individuali konsultacija</h2>
+          <p>
+            Eks Emigrantai nėra valstybinė institucija, teisininkų kontora, mokesčių konsultantas
+            ar imigracijos patarėjas. Svetainėje pateikiama informacija yra bendro pobūdžio ir
+            skirta padėti pasiruošti tolesniems veiksmams.
+          </p>
+          <p>
+            Jei gavote oficialų sprendimą, turite terminą apskundimui, kalbama apie didelę pinigų
+            sumą, imigracijos statusą, mokesčių skolą ar socialinių išmokų ginčą, verta kreiptis į
+            atitinkamą instituciją arba kvalifikuotą specialistą.
+          </p>
+
+          <div class="surface-divider"></div>
+
+          <p class="policy-label">Taisymai</p>
+          <h2>Klaidų taisymas ir atnaujinimai</h2>
+          <p>
+            Jei pastebėjote netikslumą, pasenusį šaltinį, neveikiančią nuorodą ar aiškesnį
+            oficialų paaiškinimą, parašykite per kontaktų puslapį. Gavę pagrįstą pastabą,
+            peržiūrime tekstą ir, jei reikia, jį atnaujiname.
+          </p>
+          <p>
+            Prioritetą teikiame pataisymams, kurie gali turėti praktinę reikšmę žmogaus veiksmams:
+            dokumentų sąrašams, terminams, oficialių formų pavadinimams, institucijų nuorodoms ir
+            teisės ar mokesčių taisyklių pokyčiams.
+          </p>
+
+          <div class="surface-divider"></div>
+
+          <p class="policy-label">Nepriklausomumas</p>
+          <h2>Reklama ir interesai</h2>
+          <p>
+            Jei svetainėje bus rodoma reklama, ji neturėtų lemti redakcinių išvadų. Straipsniuose
+            nenaudojame mokamų rekomendacijų be aiškaus pažymėjimo. Jei ateityje atsiras partnerystės
+            ar komercinės nuorodos, jos turi būti pažymėtos taip, kad skaitytojui būtų aišku.
+          </p>
+
+          <a href="/kontaktai" class="pill-link pill-link-secondary">Pranešti apie netikslumą</a>
+        </div>
+      </section>
+    </main>
+    <Footer />
+    <ScrollToTop />
+  </body>
+</html>
+
+<style>
+  .policy-shell {
+    padding-top: 2.4rem;
+    padding-bottom: 1rem;
+  }
+
+  .policy-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 2rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .policy-panel {
+    padding: 1.7rem;
+  }
+
+  .policy-prose {
+    max-width: 78ch;
+  }
+
+  .policy-label {
+    margin: 0;
+    color: var(--accent-deep);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .policy-prose h2 {
+    margin: 0.8rem 0 0.7rem;
+    font-family: var(--font-serif);
+    font-size: clamp(1.85rem, 3vw, 2.45rem);
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+    color: var(--surface-ink);
+  }
+
+  .policy-prose p,
+  .policy-prose li {
+    color: var(--text-soft);
+    line-height: 1.8;
+  }
+
+  .policy-prose ul {
+    margin: 0.9rem 0 0;
+    padding-left: 1.25rem;
+    list-style: disc;
+  }
+
+  .policy-prose li::marker {
+    color: var(--accent-deep);
+    font-weight: 800;
+  }
+
+  .policy-prose a {
+    color: var(--accent-deep);
+    font-weight: 700;
+    text-decoration-color: rgba(184, 100, 50, 0.35);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.18em;
+  }
+
+  .policy-prose .pill-link {
+    margin-top: 0.4rem;
+    text-decoration: none;
+  }
+
+  .policy-prose .surface-divider {
+    margin: 1.8rem 0;
+  }
+
+  @media (max-width: 960px) {
+    .policy-hero {
+      align-items: start;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .policy-shell {
+      padding-top: 1.6rem;
+    }
+
+    .policy-panel {
+      padding: 1.2rem;
+    }
+  }
+</style>

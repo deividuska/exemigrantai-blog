@@ -9,7 +9,10 @@ import { SITE_TITLE } from '../consts';
 <!doctype html>
 <html lang="lt">
   <head>
-    <BaseHead title={`Kontaktai - ${SITE_TITLE}`} description="Susisiekite su mumis" />
+    <BaseHead
+      title={`Kontaktai - ${SITE_TITLE}`}
+      description="Susisiekite su Eks Emigrantai dėl temos pasiūlymo, klaidos pataisymo, šaltinio patikslinimo ar bendradarbiavimo."
+    />
   </head>
   <body>
     <Header />
@@ -20,8 +23,8 @@ import { SITE_TITLE } from '../consts';
           <h1 class="section-title">Parašykite mums</h1>
         </div>
         <p class="section-subtitle">
-          Jei turite klausimą, temą straipsniui ar norite pasidalinti savo patirtimi, parašykite.
-          Atsakome kuo paprasčiau ir kuo aiškiau.
+          Jei norite pasiūlyti temą, pranešti apie netikslumą, pasidalinti patirtimi ar
+          susisiekti dėl svetainės turinio, parašykite per kontaktų formą.
         </p>
       </section>
 
@@ -52,7 +55,12 @@ import { SITE_TITLE } from '../consts';
 
             <label class="field">
               <span>Žinutė</span>
-              <textarea id="message" name="message" required placeholder="Kuo galime padėti?"></textarea>
+              <textarea
+                id="message"
+                name="message"
+                required
+                placeholder="Trumpai aprašykite klausimą, temą arba pastebėtą netikslumą"
+              ></textarea>
             </label>
 
             <button type="submit" class="pill-link pill-link-primary submit-button">Siųsti žinutę</button>
@@ -60,8 +68,22 @@ import { SITE_TITLE } from '../consts';
         </div>
 
         <aside class="content-panel contact-aside">
-          <p class="contact-aside-label">Kiti būdai susisiekti</p>
-          <h2>Greitesnis atsakymas dažnai būna bendruomenėje</h2>
+          <p class="contact-aside-label">Dėl ko galite rašyti</p>
+          <h2>Temos, pataisymai ir šaltinių patikslinimai</h2>
+          <p>
+            Labiausiai vertiname konkrečias žinutes: kokiame straipsnyje pastebėjote klaidą,
+            kuris oficialus šaltinis pasikeitė, kokia situacija kartojasi lietuviams JK ar
+            Lietuvoje.
+          </p>
+          <p>
+            Į individualias teisines, mokesčių ar imigracijos konsultacijas neatsakome kaip
+            specialistai, tačiau galime panaudoti klausimą būsimam aiškinamajam straipsniui.
+          </p>
+
+          <div class="surface-divider"></div>
+
+          <p class="contact-aside-label">Bendruomenė</p>
+          <h2>Greitesnis praktinis atsakymas gali būti grupėje</h2>
           <p>
             Jei klausimas aktualus ir kitiems lietuviams JK ar Lietuvoje, parašykite mūsų Facebook
             grupėje. Ten lengviau pasidalinti patirtimi ir realiais pavyzdžiais.
