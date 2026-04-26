@@ -167,29 +167,35 @@ const structuredData = {
 
             if (!prose || !middleAffiliateSlot?.children.length) return;
 
-            // Astro Markdoc wraps rendered content in an <article> element, so the real
-            // block-level children live one level deeper than .article-prose.
             const proseRoot = prose.querySelector('article') || prose;
 
             const blocks = Array.from(proseRoot.children).filter((element) =>
-              ['P', 'H2', 'H3', 'UL', 'OL', 'TABLE'].includes(element.tagName)
+              ['P', 'H2', 'H3', 'UL', 'OL', 'TABLE', 'FIGURE', 'BLOCKQUOTE'].includes(element.tagName)
             );
 
             if (!blocks.length) return;
 
-            const targetIndex = Math.min(Math.max(4, Math.floor(blocks.length * 0.45)), blocks.length - 1);
+            const targetIndex = Math.min(Math.max(5, Math.floor(blocks.length * 0.42)), blocks.length - 1);
             const target = blocks[targetIndex];
 
-            if (target) {
+            if (target && target.nextElementSibling !== middleAffiliateSlot) {
               target.after(middleAffiliateSlot);
             }
           }
 
-          if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', placeMiddleAffiliateSlot);
-          } else {
+          function scheduleMiddleAffiliatePlacement() {
             placeMiddleAffiliateSlot();
+            requestAnimationFrame(placeMiddleAffiliateSlot);
+            window.setTimeout(placeMiddleAffiliateSlot, 250);
           }
+
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', scheduleMiddleAffiliatePlacement);
+          } else {
+            scheduleMiddleAffiliatePlacement();
+          }
+
+          window.addEventListener('load', placeMiddleAffiliateSlot, { once: true });
         </script>
       </article>
     </main>
