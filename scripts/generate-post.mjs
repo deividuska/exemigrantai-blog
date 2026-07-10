@@ -167,6 +167,39 @@ ${existing}
 ${retryFeedback ? `\nPrevious draft feedback — correct every applicable point in this new draft:\n${retryFeedback}` : ''}`;
 }
 
+function buildRepairPrompt(existingPosts, previousOutput, feedback) {
+  return `You are revising one already-researched Lithuanian article for Eks Emigrantai.
+
+Do NOT use web search and do NOT replace the article with a newly researched topic. Preserve the original article's factual claims, official source URLs, practical focus and image concept unless a listed validation issue requires a small correction. Do not invent any new rules, dates, figures, forms, statistics or URLs.
+
+Return a complete replacement in valid JSON only, using exactly this shape:
+{
+  "title": "...",
+  "category": "Naujienos",
+  "seoTitle": "...",
+  "seoDescription": "...",
+  "articleMarkdown": "...",
+  "imageBrief": {
+    "alt": "...",
+    "concept": "...",
+    "countryDirection": "...",
+    "objects": ["...", "...", "..."],
+    "avoid": ["readable text", "logos"]
+  }
+}
+
+Apply every validation correction below. The finished articleMarkdown must be in natural Lithuanian, start with a bold real-life problem paragraph, contain no frontmatter or H1, and retain the required sections "## KÄ… svarbiausia prisiminti?" and "## OficialÅ«s Å¡altiniai". Keep it between ${MIN_ARTICLE_WORDS} and ${MAX_ARTICLE_WORDS} words. Retain 2-6 direct official source links. Use only 1-3 internal links from the allow-list, if any:
+${existingPosts.map(({ slug, title }) => `- [${title}](/blog/${slug}/)`).join('\n')}
+
+Validation issues to fix:
+${feedback}
+
+Previous response to repair (it may be malformed JSON; recover its article rather than starting again):
+---
+${previousOutput}
+---`;
+}
+
 function normalizeInternalLinks(article, existingPosts) {
   const canonicalPaths = new Set(existingPosts.map((post) => `/blog/${post.slug}`));
   return article.replace(/\]\((\/blog\/[^)\s#?]+)(?=[)\s#?])/g, (match, link) => {
@@ -311,20 +344,26 @@ async function main() {
   let draft;
   let slug;
   let retryFeedback = '';
+  let previousOutput = '';
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
-    log(`attempt ${attempt}/${MAX_ATTEMPTS}: researching and generating with ${MODEL}`);
+    const isRepair = attempt > 1;
+    log(`attempt ${attempt}/${MAX_ATTEMPTS}: ${isRepair ? 'repairing saved draft without web search' : 'researching and generating'} with ${MODEL}`);
     const response = await openaiJson(apiKey, {
       model: MODEL,
       reasoning: { effort: process.env.POST_EFFORT || 'low' },
-      tools: [{ type: 'web_search' }],
-      input: buildPrompt(existingPosts, retryFeedback),
+      ...(isRepair ? {} : { tools: [{ type: 'web_search' }] }),
+      input: isRepair
+        ? buildRepairPrompt(existingPosts, previousOutput, retryFeedback)
+        : buildPrompt(existingPosts),
     });
     const text = outputText(response);
+    previousOutput = text;
     try {
       draft = JSON.parse(text.replace(/^```json\s*|\s*```$/g, ''));
     } catch {
       log('rejected: model response was not valid JSON');
+      retryFeedback = '- The previous response was not valid JSON. Return the complete replacement article in the exact JSON shape requested.';
       continue;
     }
     draft.articleMarkdown = sanitizeExternalUrls(normalizeInternalLinks(draft.articleMarkdown || '', existingPosts));

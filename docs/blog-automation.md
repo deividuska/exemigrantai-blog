@@ -6,6 +6,8 @@ The generator creates one complete Lithuanian Markdoc post and, by default, one 
 
 `scripts/generate-post.mjs` uses the OpenAI Responses API to research official primary sources and write the article. It then uses the OpenAI Images API to create a landscape featured image from the article-specific image brief.
 
+The first article attempt is the only attempt with web search enabled. If validation finds a mechanical problem (for example, length, JSON structure or an invalid internal link), the generator keeps that response and makes up to two cheaper repair attempts without web search. Those repairs receive the saved draft and the exact validation feedback, so they preserve the researched facts and official source links rather than starting the research again.
+
 The image call includes three existing featured images as visual references. Every generated image must remain an original article-specific scene, but follows the established warm paper-cut editorial collage style.
 
 The workflow runs at 06:00 UTC on Tuesdays and Fridays, and can also be run manually from **Actions → Daily AI blog post → Run workflow**.
