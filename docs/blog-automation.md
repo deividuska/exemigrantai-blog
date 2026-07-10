@@ -10,7 +10,7 @@ The first article attempt is the only attempt with web search enabled. If valida
 
 The image call includes three existing featured images as visual references. Every generated image must remain an original article-specific scene, but follows the established warm paper-cut editorial collage style.
 
-The workflow runs at 06:00 UTC on Tuesdays and Fridays, and can also be run manually from **Actions → Daily AI blog post → Run workflow**.
+The workflow runs at 06:00 UTC on Mondays, Wednesdays and Fridays, and can also be run manually from **Actions → Daily AI blog post → Run workflow**.
 
 ## Required GitHub setup
 
