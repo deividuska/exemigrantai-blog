@@ -1,6 +1,6 @@
 # Automated blog publishing
 
-The generator creates one complete Lithuanian Markdoc post and, by default, one featured image. It is intentionally strict: it reads existing posts, rejects duplicate or very similar titles, validates the house structure and does not write a post until all validation checks pass.
+The generator creates one complete Lithuanian Markdoc post and, by default, one featured image. It reads existing posts, rejects duplicate or very similar titles, validates the house structure and does not write a post until all validation checks pass. It aims for 800-1,200 words, accepts complete posts from 700 words, and never rejects a post merely for falling short of an artificial SEO word count.
 
 ## What runs
 

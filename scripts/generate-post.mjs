@@ -9,7 +9,7 @@ const API_URL = 'https://api.openai.com/v1';
 const MODEL = process.env.POST_MODEL || 'gpt-5.4-mini';
 const IMAGE_MODEL = process.env.IMAGE_MODEL || 'gpt-image-2';
 const MAX_ATTEMPTS = Number(process.env.MAX_ATTEMPTS || 3);
-const MIN_ARTICLE_WORDS = Number(process.env.MIN_ARTICLE_WORDS || 900);
+const MIN_ARTICLE_WORDS = Number(process.env.MIN_ARTICLE_WORDS || 700);
 const MAX_ARTICLE_WORDS = Number(process.env.MAX_ARTICLE_WORDS || 1_600);
 const GENERATE_FEATURED_IMAGE = process.env.GENERATE_FEATURED_IMAGE !== 'false';
 const IMAGE_QUALITY = process.env.IMAGE_QUALITY || 'medium';
@@ -117,11 +117,13 @@ async function openaiJson(apiKey, body) {
   return data;
 }
 
-function buildPrompt(existingPosts) {
+function buildPrompt(existingPosts, retryFeedback = '') {
   const existing = existingPosts.map(({ title, slug }) => `- ${title} (${slug})`).join('\n');
   return `You are the careful Lithuanian editor for Eks Emigrantai, a practical informational site for Lithuanians moving between Lithuania and the UK, USA, Canada, Sweden and Norway, or returning to Lithuania.
 
 Write one timely evergreen article in Lithuanian. Pick a useful, specific topic that does not overlap the existing list. Prioritise UK <-> Lithuania and USA <-> Lithuania. USA return articles should be useful to long-term emigrants and retirees; UK articles should also serve working-age people and families. Do not write political commentary. For current migration rules, benefits, pensions, tax or healthcare, use web search and rely only on primary official sources.
+
+Length: aim for 800-1,200 useful Lithuanian words in articleMarkdown. An article may be as short as 700 words only when it fully answers a naturally narrow reader question. Never add filler merely to meet a length target.
 
 House style:
 - Calm, plain, practical, reader-first Lithuanian.
@@ -160,7 +162,16 @@ Internal-link allow-list:
 ${existingPosts.map(({ slug, title }) => `- [${title}](/blog/${slug}/)`).join('\n')}
 
 Existing posts to avoid:
-${existing}`;
+${existing}
+${retryFeedback ? `\nPrevious draft feedback — correct every applicable point in this new draft:\n${retryFeedback}` : ''}`;
+}
+
+function normalizeInternalLinks(article, existingPosts) {
+  const canonicalPaths = new Set(existingPosts.map((post) => `/blog/${post.slug}`));
+  return article.replace(/\]\((\/blog\/[^)\s#?]+)(?=[)\s#?])/g, (match, link) => {
+    const pathWithoutSlash = link.replace(/\/+$/, '');
+    return canonicalPaths.has(pathWithoutSlash) ? `](${pathWithoutSlash}/` : match;
+  });
 }
 
 function validateDraft(draft, existingPosts) {
@@ -248,6 +259,7 @@ async function main() {
   log(`loaded ${existingPosts.length} existing posts`);
   let draft;
   let slug;
+  let retryFeedback = '';
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
     log(`attempt ${attempt}/${MAX_ATTEMPTS}: researching and generating with ${MODEL}`);
@@ -255,7 +267,7 @@ async function main() {
       model: MODEL,
       reasoning: { effort: process.env.POST_EFFORT || 'low' },
       tools: [{ type: 'web_search' }],
-      input: buildPrompt(existingPosts),
+      input: buildPrompt(existingPosts, retryFeedback),
     });
     const text = outputText(response);
     try {
@@ -264,9 +276,11 @@ async function main() {
       log('rejected: model response was not valid JSON');
       continue;
     }
+    draft.articleMarkdown = normalizeInternalLinks(draft.articleMarkdown || '', existingPosts);
     const errors = validateDraft(draft, existingPosts);
     if (errors.length) {
       log(`rejected: ${errors.join('; ')}`);
+      retryFeedback = errors.map((error) => `- ${error}`).join('\n');
       continue;
     }
     slug = slugify(draft.title);
