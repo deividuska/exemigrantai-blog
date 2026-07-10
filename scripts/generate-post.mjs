@@ -134,6 +134,7 @@ House style:
 - Use Markdoc tables only when they simplify a real comparison. Do not use unsupported HTML.
 - Cite official sources as Markdown links in relevant text and list 2-6 official sources at the end. Never invent URLs, rules, figures, dates, forms or statistics. Do not cite search-result pages.
 - Use 1-3 natural internal links only from the allow-list below.
+- Use clean, direct source URLs only. Never include tracking parameters such as utm_source, and never include an OpenAI attribution or referral parameter.
 - Avoid generic AI filler and do not include frontmatter or an H1.
 
 Image brief rules:
@@ -174,6 +175,51 @@ function normalizeInternalLinks(article, existingPosts) {
   });
 }
 
+function sanitizeExternalUrl(value) {
+  try {
+    const url = new URL(value);
+    for (const key of [...url.searchParams.keys()]) {
+      const normalizedKey = key.toLowerCase();
+      const normalizedValue = (url.searchParams.get(key) || '').toLowerCase();
+      if (
+        normalizedKey.startsWith('utm_') ||
+        ['fbclid', 'gclid', 'dclid', 'msclkid', 'mc_cid', 'mc_eid'].includes(normalizedKey) ||
+        normalizedValue === 'openai'
+      ) {
+        url.searchParams.delete(key);
+      }
+    }
+    return url.toString();
+  } catch {
+    return value;
+  }
+}
+
+function sanitizeExternalUrls(article) {
+  return article.replace(/https?:\/\/[^\s<>()\]]+/g, sanitizeExternalUrl);
+}
+
+async function sanitizeExistingPostUrls() {
+  const entries = await readdir(POSTS_DIR, { withFileTypes: true });
+  let changed = 0;
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const file = path.join(POSTS_DIR, entry.name, 'index.mdoc');
+    try {
+      const raw = await readFile(file, 'utf8');
+      const sanitized = sanitizeExternalUrls(raw);
+      if (sanitized !== raw) {
+        await writeFile(file, sanitized, 'utf8');
+        changed += 1;
+        log(`sanitized source URLs: ${path.relative(ROOT, file)}`);
+      }
+    } catch {
+      // A folder without an index.mdoc is not a published post.
+    }
+  }
+  log(`sanitized ${changed} existing post(s)`);
+}
+
 function validateDraft(draft, existingPosts) {
   const errors = [];
   const fields = ['title', 'category', 'seoTitle', 'seoDescription', 'articleMarkdown'];
@@ -198,6 +244,7 @@ function validateDraft(draft, existingPosts) {
   }
   if (!/^\*\*.+\*\*/.test(article)) errors.push('opening paragraph is not bold');
   if (!/https:\/\//.test(article)) errors.push('article has no external source links');
+  if (/[?&][^\s#=&]+=[^\s#&]*openai/i.test(article)) errors.push('article contains an OpenAI tracking parameter');
   if ((draft.imageBrief.objects || []).length < 3 || (draft.imageBrief.objects || []).length > 5) errors.push('image brief needs 3-5 objects');
   if (!String(draft.imageBrief.countryDirection || '').trim()) errors.push('image brief has no country direction');
 
@@ -254,6 +301,10 @@ function setGithubOutput(name, value) {
 }
 
 async function main() {
+  if (process.env.SANITIZE_EXISTING_POST_URLS === 'true') {
+    await sanitizeExistingPostUrls();
+    return;
+  }
   const apiKey = requiredEnv('OPENAI_API_KEY');
   const existingPosts = await getExistingPosts();
   log(`loaded ${existingPosts.length} existing posts`);
@@ -276,7 +327,7 @@ async function main() {
       log('rejected: model response was not valid JSON');
       continue;
     }
-    draft.articleMarkdown = normalizeInternalLinks(draft.articleMarkdown || '', existingPosts);
+    draft.articleMarkdown = sanitizeExternalUrls(normalizeInternalLinks(draft.articleMarkdown || '', existingPosts));
     const errors = validateDraft(draft, existingPosts);
     if (errors.length) {
       log(`rejected: ${errors.join('; ')}`);
