@@ -152,11 +152,13 @@ Length: aim for 800-1,300 useful Lithuanian words in articleMarkdown. An article
 House style:
 - Calm, plain, warm, reader-first Lithuanian.
 - Start articleMarkdown with a bold real-life problem paragraph for a Lithuanian abroad, then a short direct answer paragraph.
-- Then add a sentence stating that the article is based on reliable sources checked today.
 - Use concrete ## question headings, short paragraphs, and occasional bullet lists.
 - Include these exact sections: "## Ką svarbiausia prisiminti?" and "## Šaltiniai ir tolesnis skaitymas".
 - Add "## Kodėl tai svarbu lietuviams užsienyje?" when the topic is historical, cultural or identity-related.
 - Avoid academic stiffness, school-essay tone, nationalist exaggeration, political campaigning and generic AI filler.
+- Do not use template-like source-disclosure sentences such as "parengta remiantis šaltiniais, patikrintais šiandien". Sources belong naturally in the text and in the final source section.
+- For historical or cultural-memory topics, verify the exact date, period and political context before writing. If an event happened in late Soviet Lithuania, during Sąjūdis, after independence, or in interwar Lithuania, say that precisely. Do not blur different eras together.
+- Prefer concrete Lithuanian details over abstract phrases. Use examples, dates, viewing habits, institutions, names, places or everyday context where reliable sources support them.
 - Cite sources as Markdown links in relevant text and list 2-6 reliable sources at the end. Never invent URLs, dates, names, statistics or claims. Do not cite search-result pages.
 - Use 1-3 natural internal links only from the allow-list below.
 - Use clean, direct source URLs only. Never include tracking parameters such as utm_source, and never include an OpenAI attribution or referral parameter.
@@ -202,13 +204,13 @@ Length: aim for 800-1,200 useful Lithuanian words in articleMarkdown. An article
 House style:
 - Calm, plain, practical, reader-first Lithuanian.
 - Start articleMarkdown with a bold real-life problem paragraph, then a short direct answer paragraph.
-- Then add a sentence stating that the article is based on official sources checked today.
 - Use concrete ## question/task headings, short paragraphs, checklists and numbered steps where helpful.
 - Include a practical summary headed "## Ką svarbiausia prisiminti?", "## Oficialūs šaltiniai", and, for legal/tax/benefits/immigration/health matters, "## Svarbi pastaba".
 - Use Markdoc tables only when they simplify a real comparison. Do not use unsupported HTML.
 - Cite official sources as Markdown links in relevant text and list 2-6 official sources at the end. Never invent URLs, rules, figures, dates, forms or statistics. Do not cite search-result pages.
 - Use 1-3 natural internal links only from the allow-list below.
 - Use clean, direct source URLs only. Never include tracking parameters such as utm_source, and never include an OpenAI attribution or referral parameter.
+- Do not use template-like source-disclosure sentences such as "parengta remiantis šaltiniais, patikrintais šiandien". Mention source context only when it reads naturally, and keep formal source lists in the source section.
 - Avoid generic AI filler and do not include frontmatter or an H1.
 
 Image brief rules:
@@ -273,6 +275,8 @@ Return a complete replacement in valid JSON only, using exactly this shape:
 
 Apply every validation correction below. The finished articleMarkdown must be in natural Lithuanian, start with a bold real-life problem paragraph, contain no frontmatter or H1, and retain the required sections "## Ką svarbiausia prisiminti?" and "## ${sourceHeading}". Keep it between ${MIN_ARTICLE_WORDS} and ${MAX_ARTICLE_WORDS} words. Retain 2-6 direct source links. Use only 1-3 internal links from the allow-list, if any:
 ${existingPosts.map(({ slug, title }) => `- [${title}](/blog/${slug}/)`).join('\n')}
+
+Do not add template-like source-disclosure sentences such as "parengta remiantis šaltiniais, patikrintais šiandien". If the article is historical or cultural, preserve exact dates, period labels and political context.
 
 Validation issues to fix:
 ${feedback}
