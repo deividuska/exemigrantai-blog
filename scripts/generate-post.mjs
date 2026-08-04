@@ -14,6 +14,8 @@ const MAX_ARTICLE_WORDS = Number(process.env.MAX_ARTICLE_WORDS || 1_600);
 const GENERATE_FEATURED_IMAGE = process.env.GENERATE_FEATURED_IMAGE !== 'false';
 const IMAGE_QUALITY = process.env.IMAGE_QUALITY || 'medium';
 const IMAGE_SIZE = process.env.IMAGE_SIZE || '1536x1024';
+const CONTENT_LANES = new Set(['auto', 'migration', 'lithuanian_knowledge']);
+const LITHUANIAN_KNOWLEDGE_CATEGORY = 'Ką turi žinoti kiekvienas lietuvis';
 const STOPWORDS = new Set([
   'apie', 'arba', 'darbo', 'dalis', 'gauti', 'grizus', 'grizimas', 'kaip', 'kada',
   'kad', 'kiek', 'kur', 'lietuva', 'lietuviai', 'lietuvoje', 'metais', 'm', 'nuo',
@@ -26,6 +28,17 @@ const REFERENCE_IMAGES = [
   'vaiko-grizimas-i-lietuvos-mokykla-is-jk-2026-dokumentai-klase-kalba-pazymiai',
   'grizimas-i-lietuva-su-augintiniu-is-jk-2026-pasas-mikroschema-skiepai-keliones-klaidos',
 ].map((slug) => path.join(IMAGE_ROOT, slug, 'featuredImage.png'));
+
+function resolveContentLane() {
+  const requested = (process.env.CONTENT_LANE || 'auto').trim();
+  if (!CONTENT_LANES.has(requested)) {
+    throw new Error(`Invalid CONTENT_LANE: ${requested}. Use auto, migration, or lithuanian_knowledge.`);
+  }
+  if (requested !== 'auto') return requested;
+
+  const day = new Date().getUTCDay();
+  return day === 2 || day === 4 ? 'lithuanian_knowledge' : 'migration';
+}
 
 function requiredEnv(name) {
   const value = process.env[name]?.trim();
@@ -117,8 +130,69 @@ async function openaiJson(apiKey, body) {
   return data;
 }
 
-function buildPrompt(existingPosts, retryFeedback = '') {
+function buildPrompt(existingPosts, retryFeedback = '', lane = 'migration') {
   const existing = existingPosts.map(({ title, slug }) => `- ${title} (${slug})`).join('\n');
+  if (lane === 'lithuanian_knowledge') {
+    return `You are the careful Lithuanian editor for Eks Emigrantai, writing the section "${LITHUANIAN_KNOWLEDGE_CATEGORY}".
+
+Write one evergreen Lithuanian article for Lithuanians abroad, returning emigrants, and their children who want to understand Lithuania more deeply. Pick a useful, searchable topic that does not overlap the existing list. The section covers Lithuanian history, statehood, culture, public memory, everyday nostalgia, media, cinema, TV and shared national reference points.
+
+Topic range examples:
+- Early Lithuania: first mention of Lithuania, Baltic tribes, Mindaugas, the Grand Duchy of Lithuania.
+- Historical milestones: Žalgirio mūšis, Vasario 16-oji, Kovo 11-oji, occupations, Sąjūdis, exile and return.
+- Culture and memory: Soviet-era and early independence TV, cinema, music, books, public rituals, why certain shows such as "Vergė Izaura" became cultural memories.
+- Direct-answer queries: when an event happened, what it means, why it matters, what Lithuanians should remember.
+
+Do not write a random trivia article. The article must explain the topic clearly enough that an ordinary Lithuanian could tell the story to their child or to a foreign-born family member. Give historical/cultural background, the essential facts, why it mattered then, why it still matters now, and what people often misunderstand.
+
+Use web search. Prefer authoritative Lithuanian sources: official state or museum pages, Lithuanian encyclopaedia/Visuotinė lietuvių enciklopedija, universities, reputable archives, LRT or other serious cultural/history coverage. For cultural nostalgia topics, use reliable sources and clearly distinguish documented facts from interpretation.
+
+Length: aim for 800-1,300 useful Lithuanian words in articleMarkdown. An article may be as short as 700 words only when it fully answers a naturally narrow reader question. Never add filler merely to meet a length target.
+
+House style:
+- Calm, plain, warm, reader-first Lithuanian.
+- Start articleMarkdown with a bold real-life problem paragraph for a Lithuanian abroad, then a short direct answer paragraph.
+- Then add a sentence stating that the article is based on reliable sources checked today.
+- Use concrete ## question headings, short paragraphs, and occasional bullet lists.
+- Include these exact sections: "## Ką svarbiausia prisiminti?" and "## Šaltiniai ir tolesnis skaitymas".
+- Add "## Kodėl tai svarbu lietuviams užsienyje?" when the topic is historical, cultural or identity-related.
+- Avoid academic stiffness, school-essay tone, nationalist exaggeration, political campaigning and generic AI filler.
+- Cite sources as Markdown links in relevant text and list 2-6 reliable sources at the end. Never invent URLs, dates, names, statistics or claims. Do not cite search-result pages.
+- Use 1-3 natural internal links only from the allow-list below.
+- Use clean, direct source URLs only. Never include tracking parameters such as utm_source, and never include an OpenAI attribution or referral parameter.
+- Do not include frontmatter or an H1.
+
+Image brief rules:
+- Capture the article's central memory or historical meaning in one landscape featured image.
+- Specify Lithuania/cultural-memory direction, 3-5 concrete symbolic objects, and one mood/action.
+- For copyrighted films, TV shows or characters, evoke the era with symbolic objects instead of recreating protected characters, actors, logos or stills.
+- No readable text, logos, flags filling the composition, photorealism, neon, or generic classroom imagery.
+- The visual style is warm editorial paper-cut / 2.5D collage: cream background, muted petrol teal, sage, ochre, sand and restrained coral; layered paper forms, gentle shadows, subtle grain, calm useful mood.
+
+Return valid JSON only with this shape:
+{
+  "title": "...",
+  "category": "${LITHUANIAN_KNOWLEDGE_CATEGORY}",
+  "seoTitle": "...",
+  "seoDescription": "...",
+  "articleMarkdown": "...",
+  "imageBrief": {
+    "alt": "...",
+    "concept": "...",
+    "countryDirection": "...",
+    "objects": ["...", "...", "..."],
+    "avoid": ["readable text", "logos"]
+  }
+}
+
+Internal-link allow-list:
+${existingPosts.map(({ slug, title }) => `- [${title}](/blog/${slug}/)`).join('\n')}
+
+Existing posts to avoid:
+${existing}
+${retryFeedback ? `\nPrevious draft feedback - correct every applicable point in this new draft:\n${retryFeedback}` : ''}`;
+  }
+
   return `You are the careful Lithuanian editor for Eks Emigrantai, a practical informational site for Lithuanians moving between Lithuania and the UK, USA, Canada, Sweden and Norway, or returning to Lithuania.
 
 Write one timely evergreen article in Lithuanian. Pick a useful, specific topic that does not overlap the existing list. Prioritise UK <-> Lithuania and USA <-> Lithuania. USA return articles should be useful to long-term emigrants and retirees; UK articles should also serve working-age people and families. Do not write political commentary. For current migration rules, benefits, pensions, tax or healthcare, use web search and rely only on primary official sources.
@@ -167,15 +241,24 @@ ${existing}
 ${retryFeedback ? `\nPrevious draft feedback — correct every applicable point in this new draft:\n${retryFeedback}` : ''}`;
 }
 
-function buildRepairPrompt(existingPosts, previousOutput, feedback) {
+function buildRepairPrompt(existingPosts, previousOutput, feedback, lane = 'migration') {
+  const expectedCategory = lane === 'lithuanian_knowledge' ? LITHUANIAN_KNOWLEDGE_CATEGORY : 'Naujienos';
+  const sourceHeading = lane === 'lithuanian_knowledge' ? 'Šaltiniai ir tolesnis skaitymas' : 'Oficialūs šaltiniai';
+  const laneInstruction =
+    lane === 'lithuanian_knowledge'
+      ? `This is for the "${LITHUANIAN_KNOWLEDGE_CATEGORY}" section. Preserve the Lithuanian history, culture or public-memory angle. The explanation must be deep enough for ordinary Lithuanians abroad to understand the context, meaning, timeline and common misunderstandings.`
+      : 'This is for the practical migration/returning-to-Lithuania lane. Preserve the official-source practical guidance angle.';
+
   return `You are revising one already-researched Lithuanian article for Eks Emigrantai.
 
 Do NOT use web search and do NOT replace the article with a newly researched topic. Preserve the original article's factual claims, official source URLs, practical focus and image concept unless a listed validation issue requires a small correction. Do not invent any new rules, dates, figures, forms, statistics or URLs.
 
+${laneInstruction}
+
 Return a complete replacement in valid JSON only, using exactly this shape:
 {
   "title": "...",
-  "category": "Naujienos",
+  "category": "${expectedCategory}",
   "seoTitle": "...",
   "seoDescription": "...",
   "articleMarkdown": "...",
@@ -188,7 +271,7 @@ Return a complete replacement in valid JSON only, using exactly this shape:
   }
 }
 
-Apply every validation correction below. The finished articleMarkdown must be in natural Lithuanian, start with a bold real-life problem paragraph, contain no frontmatter or H1, and retain the required sections "## KÄ… svarbiausia prisiminti?" and "## OficialÅ«s Å¡altiniai". Keep it between ${MIN_ARTICLE_WORDS} and ${MAX_ARTICLE_WORDS} words. Retain 2-6 direct official source links. Use only 1-3 internal links from the allow-list, if any:
+Apply every validation correction below. The finished articleMarkdown must be in natural Lithuanian, start with a bold real-life problem paragraph, contain no frontmatter or H1, and retain the required sections "## Ką svarbiausia prisiminti?" and "## ${sourceHeading}". Keep it between ${MIN_ARTICLE_WORDS} and ${MAX_ARTICLE_WORDS} words. Retain 2-6 direct source links. Use only 1-3 internal links from the allow-list, if any:
 ${existingPosts.map(({ slug, title }) => `- [${title}](/blog/${slug}/)`).join('\n')}
 
 Validation issues to fix:
@@ -253,12 +336,16 @@ async function sanitizeExistingPostUrls() {
   log(`sanitized ${changed} existing post(s)`);
 }
 
-function validateDraft(draft, existingPosts) {
+function validateDraft(draft, existingPosts, lane = 'migration') {
   const errors = [];
+  const sourceHeading = lane === 'lithuanian_knowledge' ? 'Šaltiniai ir tolesnis skaitymas' : 'Oficialūs šaltiniai';
   const fields = ['title', 'category', 'seoTitle', 'seoDescription', 'articleMarkdown'];
   for (const field of fields) if (!String(draft?.[field] || '').trim()) errors.push(`missing ${field}`);
   if (!draft?.imageBrief?.concept || !draft?.imageBrief?.alt || !Array.isArray(draft?.imageBrief?.objects)) errors.push('incomplete imageBrief');
   if (errors.length) return errors;
+  if (lane === 'lithuanian_knowledge' && draft.category !== LITHUANIAN_KNOWLEDGE_CATEGORY) {
+    errors.push(`category must be "${LITHUANIAN_KNOWLEDGE_CATEGORY}"`);
+  }
 
   const slug = slugify(draft.title);
   if (slug.length < 12) errors.push('title produces a too-short slug');
@@ -272,7 +359,7 @@ function validateDraft(draft, existingPosts) {
   const words = wordCount(article);
   if (words < MIN_ARTICLE_WORDS || words > MAX_ARTICLE_WORDS) errors.push(`article has ${words} words (expected ${MIN_ARTICLE_WORDS}-${MAX_ARTICLE_WORDS})`);
   if (/^#\s+/m.test(article)) errors.push('article contains an H1');
-  for (const heading of ['Ką svarbiausia prisiminti?', 'Oficialūs šaltiniai']) {
+  for (const heading of ['Ką svarbiausia prisiminti?', sourceHeading]) {
     if (!new RegExp(`^##\\s+${heading.replace(/[?]/g, '\\?')}`, 'm').test(article)) errors.push(`missing required section: ${heading}`);
   }
   if (!/^\*\*.+\*\*/.test(article)) errors.push('opening paragraph is not bold');
@@ -339,8 +426,10 @@ async function main() {
     return;
   }
   const apiKey = requiredEnv('OPENAI_API_KEY');
+  const contentLane = resolveContentLane();
   const existingPosts = await getExistingPosts();
   log(`loaded ${existingPosts.length} existing posts`);
+  log(`content lane: ${contentLane}`);
   let draft;
   let slug;
   let retryFeedback = '';
@@ -354,8 +443,8 @@ async function main() {
       reasoning: { effort: process.env.POST_EFFORT || 'low' },
       ...(isRepair ? {} : { tools: [{ type: 'web_search' }] }),
       input: isRepair
-        ? buildRepairPrompt(existingPosts, previousOutput, retryFeedback)
-        : buildPrompt(existingPosts),
+        ? buildRepairPrompt(existingPosts, previousOutput, retryFeedback, contentLane)
+        : buildPrompt(existingPosts, retryFeedback, contentLane),
     });
     const text = outputText(response);
     previousOutput = text;
@@ -367,7 +456,7 @@ async function main() {
       continue;
     }
     draft.articleMarkdown = sanitizeExternalUrls(normalizeInternalLinks(draft.articleMarkdown || '', existingPosts));
-    const errors = validateDraft(draft, existingPosts);
+    const errors = validateDraft(draft, existingPosts, contentLane);
     if (errors.length) {
       log(`rejected: ${errors.join('; ')}`);
       retryFeedback = errors.map((error) => `- ${error}`).join('\n');
@@ -389,6 +478,7 @@ async function main() {
   await writeFile(postFile, `${frontmatter(draft, slug, Boolean(imagePath))}${draft.articleMarkdown.trim()}\n`, 'utf8');
   await setGithubOutput('title', draft.title);
   await setGithubOutput('slug', slug);
+  await setGithubOutput('content_lane', contentLane);
   log(`created article: ${path.relative(ROOT, postFile)}`);
   log(`words=${wordCount(draft.articleMarkdown)} image=${Boolean(imagePath)}`);
 }

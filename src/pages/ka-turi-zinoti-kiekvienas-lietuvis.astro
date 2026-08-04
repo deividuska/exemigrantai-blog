@@ -1,0 +1,125 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import PostCard from '../components/PostCard.astro';
+import ScrollToTop from '../components/ScrollToTop.astro';
+import { SITE_TITLE } from '../consts';
+import { getAllPosts } from '../lib/content';
+
+const CATEGORY_TITLE = 'Ką turi žinoti kiekvienas lietuvis';
+const pageDescription =
+  'Lietuvos istorija, kultūra, svarbios datos ir bendri atminties taškai lietuviams užsienyje.';
+
+const posts = (await getAllPosts()).filter((post) => post.data.category === CATEGORY_TITLE);
+---
+
+<!doctype html>
+<html lang="lt">
+  <head>
+    <BaseHead title={`${CATEGORY_TITLE} - ${SITE_TITLE}`} description={pageDescription} />
+  </head>
+  <body>
+    <Header />
+    <main class="page-shell category-shell">
+      <section class="category-hero">
+        <div>
+          <p class="category-kicker">Kategorija</p>
+          <h1 class="section-title">{CATEGORY_TITLE}</h1>
+        </div>
+        <p class="section-subtitle">
+          Trumpai ir aiškiai apie Lietuvos istoriją, kultūrą, svarbias datas, atmintį ir dalykus,
+          kuriuos verta prisiminti gyvenant užsienyje.
+        </p>
+      </section>
+
+      {
+        posts.length ? (
+          <div class="stories-grid category-grid">
+            {posts.map((post, index) => <PostCard post={post} eager={index === 0} />)}
+          </div>
+        ) : (
+          <section class="empty-state content-panel">
+            <h2>Ši kategorija ruošiama</h2>
+            <p>
+              Čia bus straipsniai apie Lietuvos istoriją, kultūrą ir dalykus, kuriuos verta žinoti
+              kiekvienam lietuviui.
+            </p>
+          </section>
+        )
+      }
+    </main>
+    <Footer />
+    <ScrollToTop />
+  </body>
+</html>
+
+<style>
+  .category-shell {
+    padding-top: 2.6rem;
+    padding-bottom: 1rem;
+  }
+
+  .category-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 2rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .category-kicker {
+    margin: 0 0 0.5rem;
+    color: var(--accent-deep);
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.35rem;
+  }
+
+  .empty-state {
+    max-width: 42rem;
+    padding: 1.6rem;
+  }
+
+  .empty-state h2 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    line-height: 1.08;
+    color: var(--surface-ink);
+  }
+
+  .empty-state p {
+    margin: 0.7rem 0 0;
+    color: var(--text-soft);
+    line-height: 1.8;
+  }
+
+  @media (max-width: 1024px) {
+    .category-hero {
+      flex-direction: column;
+      align-items: start;
+    }
+
+    .category-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 720px) {
+    .category-shell {
+      padding-top: 1.6rem;
+    }
+
+    .category-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
