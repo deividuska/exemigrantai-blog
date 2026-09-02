@@ -58,7 +58,7 @@ const navigation = settings.navigation.length
       </a>
     </div>
 
-    <button class="mobile-menu-toggle" aria-label="Atidaryti meniu">
+    <button class="mobile-menu-toggle" aria-label="Atidaryti meniu" aria-expanded="false">
       <span></span>
       <span></span>
       <span></span>
@@ -75,15 +75,23 @@ const navigation = settings.navigation.length
     toggle?.classList.remove('active');
     nav?.classList.remove('active');
     backdrop?.classList.remove('active');
+    document.body.classList.remove('menu-open');
+    toggle?.setAttribute('aria-expanded', 'false');
   }
 
   toggle?.addEventListener('click', () => {
-    toggle.classList.toggle('active');
-    nav?.classList.toggle('active');
-    backdrop?.classList.toggle('active');
+    const isOpen = toggle.classList.toggle('active');
+    nav?.classList.toggle('active', isOpen);
+    backdrop?.classList.toggle('active', isOpen);
+    document.body.classList.toggle('menu-open', isOpen);
+    toggle.setAttribute('aria-expanded', String(isOpen));
   });
 
   backdrop?.addEventListener('click', closeMenu);
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeMenu();
+  });
 
   document.querySelectorAll('.internal-links a').forEach((link) => {
     link.addEventListener('click', closeMenu);
@@ -220,6 +228,10 @@ const navigation = settings.navigation.length
     display: none;
   }
 
+  :global(body.menu-open) {
+    overflow: hidden;
+  }
+
   .mobile-menu-toggle {
     flex-direction: column;
     gap: 4px;
@@ -278,26 +290,29 @@ const navigation = settings.navigation.length
 
     .nav-wrapper {
       position: fixed;
-      top: 1rem;
-      right: -100%;
-      width: min(82vw, 320px);
-      height: calc(100vh - 2rem);
-      padding: 5.7rem 1.2rem 1.2rem;
+      top: 0.7rem;
+      right: -110vw;
+      width: min(calc(100vw - 1rem), 22rem);
+      max-width: 22rem;
+      height: calc(100dvh - 1.4rem);
+      padding: 5.2rem 1rem 1rem;
       flex-direction: column;
       justify-content: flex-start;
       align-items: stretch;
       gap: 1rem;
-      border-radius: 2rem;
+      border-radius: 1.6rem;
       background: rgba(255, 251, 245, 0.98);
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
       backdrop-filter: blur(20px);
       transition: right 0.28s ease;
+      overflow-y: auto;
+      box-sizing: border-box;
       z-index: 60;
     }
 
     .nav-wrapper.active {
-      right: 1rem;
+      right: 0.5rem;
     }
 
     .menu-backdrop {
@@ -328,6 +343,9 @@ const navigation = settings.navigation.length
     .internal-links a {
       padding: 1rem;
       border-radius: 1rem;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      white-space: normal;
     }
 
     .mobile-social-links {
