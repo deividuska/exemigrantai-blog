@@ -289,12 +289,11 @@ const navigation = settings.navigation.length
     }
 
     .nav-wrapper {
+      display: none;
       position: fixed;
-      top: 0.7rem;
-      right: -110vw;
-      width: min(calc(100vw - 1rem), 22rem);
-      max-width: 22rem;
-      height: calc(100dvh - 1.4rem);
+      inset: 0.7rem;
+      width: auto;
+      height: auto;
       padding: 5.2rem 1rem 1rem;
       flex-direction: column;
       justify-content: flex-start;
@@ -305,14 +304,13 @@ const navigation = settings.navigation.length
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
       backdrop-filter: blur(20px);
-      transition: right 0.28s ease;
       overflow-y: auto;
       box-sizing: border-box;
       z-index: 60;
     }
 
     .nav-wrapper.active {
-      right: 0.5rem;
+      display: flex;
     }
 
     .menu-backdrop {
