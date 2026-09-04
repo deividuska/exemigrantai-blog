@@ -75,7 +75,6 @@ const navigation = settings.navigation.length
     toggle?.classList.remove('active');
     nav?.classList.remove('active');
     backdrop?.classList.remove('active');
-    document.body.classList.remove('menu-open');
     toggle?.setAttribute('aria-expanded', 'false');
   }
 
@@ -83,7 +82,6 @@ const navigation = settings.navigation.length
     const isOpen = toggle.classList.toggle('active');
     nav?.classList.toggle('active', isOpen);
     backdrop?.classList.toggle('active', isOpen);
-    document.body.classList.toggle('menu-open', isOpen);
     toggle.setAttribute('aria-expanded', String(isOpen));
   });
 
@@ -228,10 +226,6 @@ const navigation = settings.navigation.length
     display: none;
   }
 
-  :global(body.menu-open) {
-    overflow: hidden;
-  }
-
   .mobile-menu-toggle {
     flex-direction: column;
     gap: 4px;
@@ -279,9 +273,12 @@ const navigation = settings.navigation.length
       display: none;
     }
 
-    .mobile-menu-toggle,
-    .menu-backdrop {
+    .mobile-menu-toggle {
       display: flex;
+    }
+
+    .menu-backdrop {
+      display: none;
     }
 
     .brand-copy span {
@@ -290,11 +287,14 @@ const navigation = settings.navigation.length
 
     .nav-wrapper {
       display: none;
-      position: fixed;
-      inset: 0.7rem;
+      position: absolute;
+      top: calc(100% + 0.55rem);
+      left: 0.6rem;
+      right: 0.6rem;
       width: auto;
       height: auto;
-      padding: 5.2rem 1rem 1rem;
+      max-height: calc(100dvh - 7rem);
+      padding: 0.7rem;
       flex-direction: column;
       justify-content: flex-start;
       align-items: stretch;
@@ -306,7 +306,7 @@ const navigation = settings.navigation.length
       backdrop-filter: blur(20px);
       overflow-y: auto;
       box-sizing: border-box;
-      z-index: 60;
+      z-index: 70;
     }
 
     .nav-wrapper.active {
